@@ -294,14 +294,10 @@ const mapWhereFilter = (where, model) => {
     } else if (where.or) {
       break;
     } else {
-      scicatWhere.or = [
-        Object.assign(
-          ...Object.keys(where).map((key) => ({
-            creator: where[key],
-            authors: where[key],
-          }))
-        ),
-      ];
+      scicatWhere.or = Object.values(where).reduce(
+        (value, it) => value.concat({ creator: it }, { authors: it }),
+        []
+      );
     }
     break;
   }
