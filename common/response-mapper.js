@@ -236,13 +236,9 @@ exports.members = (scicatPublishedData, filter) => {
  */
 
 exports.parameters = (scientificMetadata, filter) => {
-  const parameters = (
+  const parameters = utils.extractParamaterFilterMapping(
     filter.where.or ? filter.where.or : [filter.where]
-  ).reduce((o, c) => {
-    const parameter = utils.extractParamaterFilter(c);
-    o[parameter.name] = parameter;
-    return o;
-  }, {});
+  );
   return Object.keys(scientificMetadata).map((key) => {
     if (parameters[key] && parameters[key].unit) {
       const { value, unit } = utils.convertToUnit(
