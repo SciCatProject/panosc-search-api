@@ -253,10 +253,8 @@ describe("utils", () => {
       }
     );
   });
-});
 
-describe("extractParamaterFilterMapping", () => {
-  describe("extractParamaterFilter", () => {
+  describe("extractParamaterFilterMapping", () => {
     context(
       "Creates an object with the name of the parameter as key and values from extractParamaterFilter",
       () => {
