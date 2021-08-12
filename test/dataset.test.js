@@ -93,135 +93,172 @@ describe("Dataset", () => {
       });
     });
 
-    context(
-      "where parameters has a photon energy in the range 880-990 eV",
-      () => {
-        it("should return en array of datasets matching the parameter", (done) => {
-          sandbox
-            .stub(ScicatDatasetService.prototype, "find")
-            .resolves(mockStubs.dataset.find.photonEnergyFilter);
+    const renameKeys = (ds, init = {}, nameMap = { value: "v", unit: "u" }) =>
+      Object.keys(ds).reduce((o, k) => 
+        (
+          typeof ds[k] === "object" && ds[k] !== null ?
+            (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
+            : o[nameMap[k] || k] = ds[k],
+          o
+        ),
+      init);
+    const testsPhotonEnergy = [
+      {
+        args: mockStubs.dataset.find.photonEnergyFilter,
+        message: "value and unit inside scientificMetadata"
+      },
+      {
+        args: mockStubs.dataset.find.photonEnergyFilter.map(
+          dataset => renameKeys(dataset)
+        ),
+        message: "v and u inside scientificMetadata"
+      }
+    ];
+    testsPhotonEnergy.forEach(({ args, message }) => {
+      context(
+        "where parameters has a photon energy in the range 880-990 eV",
+        () => {
+          it(`should return en array of datasets matching the parameter from ${message}`, (done) => {
+            sandbox
+              .stub(ScicatDatasetService.prototype, "find")
+              .resolves(args);
 
-          const filter = JSON.stringify({
-            include: [
-              {
-                relation: "parameters",
-                scope: {
-                  where: {
-                    and: [
-                      {
-                        name: "photon_energy",
-                      },
-                      {
-                        value: {
-                          between: [880, 990],
+            const filter = JSON.stringify({
+              include: [
+                {
+                  relation: "parameters",
+                  scope: {
+                    where: {
+                      and: [
+                        {
+                          name: "photon_energy",
                         },
-                      },
-                      {
-                        unit: "eV",
-                      },
-                    ],
+                        {
+                          value: {
+                            between: [880, 990],
+                          },
+                        },
+                        {
+                          unit: "eV",
+                        },
+                      ],
+                    },
                   },
                 },
-              },
-            ],
-          });
-          request(app)
-            .get(requestUrl + "?filter=" + filter)
-            .set("Accept", "application/json")
-            .expect(200)
-            .expect("Content-Type", /json/)
-            .end((err, res) => {
-              if (err) throw err;
+              ],
+            });
+            request(app)
+              .get(requestUrl + "?filter=" + filter)
+              .set("Accept", "application/json")
+              .expect(200)
+              .expect("Content-Type", /json/)
+              .end((err, res) => {
+                if (err) throw err;
 
-              expect(res.body).to.be.an("array");
-              res.body.forEach((dataset) => {
-                expect(dataset).to.have.property("pid");
-                expect(dataset).to.have.property("title");
-                expect(dataset).to.have.property("isPublic");
-                expect(dataset).to.have.property("creationDate");
-                expect(dataset).to.have.property("score");
-                expect(dataset).to.have.property("parameters");
-                expect(dataset.parameters).to.be.an("array").and.not.empty;
-                dataset.parameters.forEach((parameter) => {
-                  expect(parameter.name).to.equal("photon_energy");
-                  expect(parameter.value).to.be.within(880, 990);
-                  expect(parameter.unit).to.equal("eV");
+                expect(res.body).to.be.an("array");
+                res.body.forEach((dataset) => {
+                  expect(dataset).to.have.property("pid");
+                  expect(dataset).to.have.property("title");
+                  expect(dataset).to.have.property("isPublic");
+                  expect(dataset).to.have.property("creationDate");
+                  expect(dataset).to.have.property("score");
+                  expect(dataset).to.have.property("parameters");
+                  expect(dataset.parameters).to.be.an("array").and.not.empty;
+                  dataset.parameters.forEach((parameter) => {
+                    expect(parameter.name).to.equal("photon_energy");
+                    expect(parameter.value).to.be.within(880, 990);
+                    expect(parameter.unit).to.equal("eV");
+                  });
                 });
+                done();
               });
-              done();
-            });
-        });
+          });
+        },
+      );
+    });
+
+    const testsSolidCopper = [
+      {
+        args: mockStubs.dataset.find.solidCopperFilter,
+        message: "value and unit inside scientificMetadata"
       },
-    );
+      {
+        args: mockStubs.dataset.find.solidCopperFilter.map(
+          dataset => renameKeys(dataset)
+        ),
+        message: "v and u inside scientificMetadata"
+      }
+    ];
+    testsSolidCopper.forEach(({ args, message }) => {
+      context(
+        "where parameters includes a solid sample containing copper",
+        () => {
+          it(`should return an array of datasets matching the parameter from ${message}`, (done) => {
+            sandbox
+              .stub(ScicatDatasetService.prototype, "find")
+              .resolves(args);
 
-    context(
-      "where parameters includes a solid sample containing copper",
-      () => {
-        it("should return en array of datasets matching the parameter", (done) => {
-          sandbox
-            .stub(ScicatDatasetService.prototype, "find")
-            .resolves(mockStubs.dataset.find.solidCopperFilter);
-
-          const filter = JSON.stringify({
-            include: [
-              {
-                relation: "parameters",
-                scope: {
-                  where: {
-                    or: [
-                      {
-                        and: [
-                          {
-                            name: "sample_state",
-                          },
-                          {
-                            value: "solid",
-                          },
-                        ],
-                      },
-                      {
-                        and: [
-                          {
-                            name: "chemical_formula",
-                          },
-                          {
-                            value: "Cu",
-                          },
-                        ],
-                      },
-                    ],
+            const filter = JSON.stringify({
+              include: [
+                {
+                  relation: "parameters",
+                  scope: {
+                    where: {
+                      or: [
+                        {
+                          and: [
+                            {
+                              name: "sample_state",
+                            },
+                            {
+                              value: "solid",
+                            },
+                          ],
+                        },
+                        {
+                          and: [
+                            {
+                              name: "chemical_formula",
+                            },
+                            {
+                              value: "Cu",
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   },
                 },
-              },
-            ],
-          });
-          request(app)
-            .get(requestUrl + "?filter=" + filter)
-            .set("Accept", "application/json")
-            .expect(200)
-            .expect("Content-Type", /json/)
-            .end((err, res) => {
-              if (err) throw err;
-
-              expect(res.body).to.be.an("array");
-              res.body.forEach((dataset) => {
-                expect(dataset).to.have.property("pid");
-                expect(dataset).to.have.property("title");
-                expect(dataset).to.have.property("isPublic");
-                expect(dataset).to.have.property("creationDate");
-                expect(dataset).to.have.property("score");
-                expect(dataset).to.have.property("parameters");
-                expect(dataset.parameters).to.be.an("array").and.not.empty;
-                expect(dataset.parameters[0].name).to.equal("chemical_formula");
-                expect(dataset.parameters[0].value).to.equal("Cu");
-                expect(dataset.parameters[1].name).to.equal("sample_state");
-                expect(dataset.parameters[1].value).to.equal("solid");
-              });
-              done();
+              ],
             });
-        });
-      },
-    );
+            request(app)
+              .get(requestUrl + "?filter=" + filter)
+              .set("Accept", "application/json")
+              .expect(200)
+              .expect("Content-Type", /json/)
+              .end((err, res) => {
+                if (err) throw err;
+
+                expect(res.body).to.be.an("array");
+                res.body.forEach((dataset) => {
+                  expect(dataset).to.have.property("pid");
+                  expect(dataset).to.have.property("title");
+                  expect(dataset).to.have.property("isPublic");
+                  expect(dataset).to.have.property("creationDate");
+                  expect(dataset).to.have.property("score");
+                  expect(dataset).to.have.property("parameters");
+                  expect(dataset.parameters).to.be.an("array").and.not.empty;
+                  expect(dataset.parameters[0].name).to.equal("chemical_formula");
+                  expect(dataset.parameters[0].value).to.equal("Cu");
+                  expect(dataset.parameters[1].name).to.equal("sample_state");
+                  expect(dataset.parameters[1].value).to.equal("solid");
+                });
+                done();
+              });
+          });
+        },
+      );
+    });
 
     context("where parameters has a temperature below 80 °C", () => {
       it("should return en array of datasets matching the parameter", (done) => {

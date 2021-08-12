@@ -352,7 +352,12 @@ const mapWhereFilter = (where, model) => {
             }
           } else {
             scicatWhere.and.push({
-              [`scientificMetadata.${name}.value`]: value,
+              "or": [{
+                [`scientificMetadata.${name}.value`]: value
+              },
+              {
+                [`scientificMetadata.${name}.v`]: value
+              }]
             });
           }
         } else {
@@ -421,7 +426,14 @@ const mapWhereFilter = (where, model) => {
                 });
               }
             } else {
-              return { [`scientificMetadata.${name}.value`]: value };
+              filter.and.push({
+                "or": [{
+                  [`scientificMetadata.${name}.value`]: value
+                },
+                {
+                  [`scientificMetadata.${name}.v`]: value
+                }]
+              });
             }
             return filter;
           } else {

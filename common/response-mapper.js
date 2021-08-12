@@ -240,8 +240,8 @@ exports.parameters = (scientificMetadata, filter) => {
   return Object.keys(scientificMetadata).map((key) => {
     if (key === parameter.name) {
       const { value, unit } = utils.convertToUnit(
-        scientificMetadata[key].value,
-        scientificMetadata[key].unit,
+        scientificMetadata[key].valueSI,
+        scientificMetadata[key].unitSI,
         parameter.unit
       );
       return {
@@ -252,8 +252,8 @@ exports.parameters = (scientificMetadata, filter) => {
     } else {
       return {
         name: key,
-        value: scientificMetadata[key].value,
-        unit: scientificMetadata[key].unit,
+        value: scientificMetadata[key].value || scientificMetadata[key].v,
+        unit: scientificMetadata[key].unit || scientificMetadata[key].u,
       };
     }
   });
