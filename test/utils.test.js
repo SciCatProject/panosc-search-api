@@ -244,10 +244,30 @@ describe("utils", () => {
       () => {
         it("Object with the extracted name, value and unit", (done) => {
           const input = {
-            and: [{ name: "aName", value: "aValue", unit: "aUnit" }],
+            and: [{ name: "aName" }, { value: "aValue" }, { unit: "aUnit" }],
           };
           const expected = { name: "aName", value: "aValue", unit: "aUnit" };
           expect(utils.extractParamaterFilter(input)).to.eql(expected);
+          done();
+        });
+      }
+    );
+  });
+
+  describe("extractParamaterFilterMapping", () => {
+    context(
+      "Creates an object with the name of the parameter as key and values from extractParamaterFilter",
+      () => {
+        it("Object with name as key and values from extractParamaterFilter", (done) => {
+          const input = [
+            { and: [{ name: "aName" }, { value: "aValue" }, { unit: "aUnit" }] },
+            { and: [{ name: "aName1" }, { value: "aValue1" }, { unit: "aUnit1" }] }
+          ];
+          const expected = {
+            aName: { name: "aName", value: "aValue", unit: "aUnit" },
+            aName1: { name: "aName1", value: "aValue1", unit: "aUnit1" }
+          };
+          expect(utils.extractParamaterFilterMapping(input)).to.eql(expected);
           done();
         });
       }

@@ -173,3 +173,19 @@ exports.extractParamaterFilter = (where) => {
     return { name: null, value: null, unit: null };
   }
 };
+
+
+/**
+ * Creates an object with the name of the parameter as key and values from extractParamaterFilter
+ * @param {object} where PaNOSC parameter where filter object
+ * @returns {object} Object with the name of the parameter as key and values from extractParamaterFilter
+ */
+exports.extractParamaterFilterMapping = (filter) => (
+  filter.reduce(
+    (o, c) => {
+      const parameter = this.extractParamaterFilter(c);
+      o[parameter.name] = parameter;
+      return o;
+    },
+    {})
+);
