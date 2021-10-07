@@ -31,7 +31,7 @@ exports.getInclusionNames = (filter) => {
       .filter(
         (primary) =>
           (primary.scope && primary.scope.where) ||
-            (primary.scope && primary.scope.include),
+          (primary.scope && primary.scope.include),
       )
       .map(({ relation }) => relation)
     : [];
@@ -101,7 +101,7 @@ exports.filterOnSecondary = (result, primary, secondary) =>
   result.filter((item) =>
     Array.isArray(item[primary])
       ? (item[primary] = this.filterOnPrimary(item[primary], secondary)) &&
-        item[primary].length > 0
+      item[primary].length > 0
       : (Object.keys(item[primary]).length > 0 && item[primary][secondary]
         ? (item[primary][secondary] = this.filterObjectsEmptyValues(
           item[primary][secondary]
@@ -151,21 +151,21 @@ exports.extractParamaterFilter = (where) => {
       Object.keys(condition).includes("name"),
     )
       ? where.and.find((condition) => Object.keys(condition).includes("name"))[
-        "name"
+      "name"
       ]
       : null;
     const value = where.and.find((condition) =>
       Object.keys(condition).includes("value"),
     )
       ? where.and.find((condition) => Object.keys(condition).includes("value"))[
-        "value"
+      "value"
       ]
       : null;
     const unit = where.and.find((condition) =>
       Object.keys(condition).includes("unit"),
     )
       ? where.and.find((condition) => Object.keys(condition).includes("unit"))[
-        "unit"
+      "unit"
       ]
       : null;
     return { name, value, unit };
@@ -189,3 +189,62 @@ exports.extractParamaterFilterMapping = (filter) => (
     },
     {})
 );
+
+
+/**
+ * compare two datasets entry
+ * used in sorting the array
+ */
+exports.compareDatasets = (a, b) => {
+  if (a.score > b.score) {
+    return -1
+  }
+  if (a.score < b.score) {
+    return 1
+  }
+  if (a.creationDate > b.creationDate) {
+    return -1
+  }
+  if (a.creationDate < b.creationDate) {
+    return 1
+  }
+  if (a.title > b.title) {
+    return -1
+  }
+  if (a.title < b.title) {
+    return 1
+  }
+  if (a.pid > b.pid) {
+    return -1
+  }
+  if (a.pid < b.pid) {
+    return 1
+  }
+  return 0
+}
+
+/**
+ * compare two documents entry
+ * used in sorting the array
+ */
+exports.compareDocuments = (a, b) => {
+  if (a.score > b.score) {
+    return -1
+  }
+  if (a.score < b.score) {
+    return 1
+  }
+  if (a.title > b.title) {
+    return -1
+  }
+  if (a.title < b.title) {
+    return 1
+  }
+  if (a.pid > b.pid) {
+    return -1
+  }
+  if (a.pid < b.pid) {
+    return 1
+  }
+  return 0
+}
