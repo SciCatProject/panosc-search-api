@@ -34,7 +34,7 @@ module.exports = function (Dataset) {
       }
     }
 
-    const scicatFilter = filterMapper.dataset(filter);
+    const scicatFilter = await filterMapper.dataset(filter);
     const datasets = await scicatDatasetService.find(scicatFilter);
     // perform scoring only if it is enabled
     if (pssScoreEnabled) {
@@ -70,7 +70,7 @@ module.exports = function (Dataset) {
    */
 
   Dataset.findById = async function (id, filter) {
-    const scicatFilter = filterMapper.dataset(filter);
+    const scicatFilter = await filterMapper.dataset(filter);
     const dataset = await scicatDatasetService.findById(id, scicatFilter);
     return await responseMapper.dataset(dataset, filter);
   };
@@ -81,7 +81,7 @@ module.exports = function (Dataset) {
    */
 
   Dataset.count = async function (where) {
-    const scicatFilter = filterMapper.dataset({ where });
+    const scicatFilter = await filterMapper.dataset({ where });
     return await scicatDatasetService.count(scicatFilter);
   };
 
