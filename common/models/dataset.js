@@ -17,7 +17,6 @@ module.exports = function (Dataset) {
    */
 
   Dataset.find = async function (filter, query) {
-    //console.log(filter)
     // remove filter limit
     var limit = -1;
     if (filter && Object.keys(filter).includes("limit")) {
@@ -25,16 +24,13 @@ module.exports = function (Dataset) {
       delete filter.limit;
     }
     const scicatFilter = filterMapper.dataset(filter);
-    //console.log(scicatFilter)
     const datasets = await scicatDatasetService.find(scicatFilter);
     // extract the ids of the dataset returned by SciCat
     const datasetsIds = datasets.map((i) => i.pid)
-    //console.log(datasetsIds);
     const scores = (
       query
         ? await pssScoreService.score(query, datasetsIds, 'datasets')
         : {});
-    //console.log(scores);
     var scoredDatasets = await Promise.all(
       datasets.map(
         async (dataset) => await responseMapper.dataset(dataset, filter, scores),
@@ -119,11 +115,6 @@ module.exports = function (Dataset) {
       });
     }
 
-    /*
-    ctx.result.forEach((instance) => {
-      instance.score = 0;
-    });
-    */
     next();
   });
 };

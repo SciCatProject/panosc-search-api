@@ -18,7 +18,6 @@ module.exports = function (Document) {
 
   Document.find = async function (filter, query) {
     // remove filter limit
-    //console.log(filter);
     var limit = -1;
     if (filter && Object.keys(filter).includes("limit")) {
       limit = filter.limit;
@@ -27,10 +26,8 @@ module.exports = function (Document) {
 
     const scicatFilter = filterMapper.document(filter);
     const publishedData = await scicatPublishedDataService.find(scicatFilter);
-    //console.log(publishedData);
     // extract the ids of the dataset returned by SciCat
     const documentsIds = publishedData.map((i) => i.doi);
-    //console.log(documentsIds);
     const scores = (
       query
         ? await pssScoreService.score(query, documentsIds, 'documents')
@@ -91,12 +88,6 @@ module.exports = function (Document) {
         }
       });
     }
-
-    /*
-    ctx.result.forEach((instance) => {
-      instance.score = 0;
-    });
-    */
 
     next();
   });
