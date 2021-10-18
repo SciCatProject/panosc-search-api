@@ -6,7 +6,7 @@ const baseUrl = process.env.PSS_BASE_URL || "http://localhost:8000";
 
 exports.Score = class {
 
-  pss_score_url = baseUrl + "/score"
+  pss_score_url = baseUrl + "/score";
 
   /**
    * request scoring to PSS subsystem

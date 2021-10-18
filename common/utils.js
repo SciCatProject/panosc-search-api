@@ -197,30 +197,30 @@ exports.extractParamaterFilterMapping = (filter) => (
  */
 exports.compareDatasets = (a, b) => {
   if (a.score > b.score) {
-    return -1
+    return -1;
   }
   if (a.score < b.score) {
-    return 1
+    return 1;
   }
   if (a.creationDate > b.creationDate) {
-    return -1
+    return -1;
   }
   if (a.creationDate < b.creationDate) {
-    return 1
+    return 1;
   }
   if (a.title > b.title) {
-    return -1
+    return -1;
   }
   if (a.title < b.title) {
-    return 1
+    return 1;
   }
   if (a.pid > b.pid) {
-    return -1
+    return -1;
   }
   if (a.pid < b.pid) {
-    return 1
+    return 1;
   }
-  return 0
+  return 0;
 }
 
 /**
@@ -229,22 +229,22 @@ exports.compareDatasets = (a, b) => {
  */
 exports.compareDocuments = (a, b) => {
   if (a.score > b.score) {
-    return -1
+    return -1;
   }
   if (a.score < b.score) {
-    return 1
+    return 1;
   }
   if (a.title > b.title) {
-    return -1
+    return -1;
   }
   if (a.title < b.title) {
-    return 1
+    return 1;
   }
   if (a.pid > b.pid) {
-    return -1
+    return -1;
   }
   if (a.pid < b.pid) {
-    return 1
+    return 1;
   }
-  return 0
+  return 0;
 }

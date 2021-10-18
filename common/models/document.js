@@ -5,6 +5,7 @@ const scicatPublishedDataService = new ScicatService.PublishedData();
 
 const PSSService = require("../pss-service");
 const pssScoreService = new PSSService.Score();
+const pssScoreEnabled = process.env.PSS_ENABLE || false;
 
 const filterMapper = require("../filter-mapper");
 const responseMapper = require("../response-mapper");
@@ -19,29 +20,41 @@ module.exports = function (Document) {
   Document.find = async function (filter, query) {
     // remove filter limit
     var limit = -1;
-    if (filter && Object.keys(filter).includes("limit")) {
+    // remove limit only if scoreing is enabled
+    if (pssScoreEnabled && filter && Object.keys(filter).includes("limit")) {
       limit = filter.limit;
       delete filter.limit;
     }
 
     const scicatFilter = filterMapper.document(filter);
     const publishedData = await scicatPublishedDataService.find(scicatFilter);
-    // extract the ids of the dataset returned by SciCat
-    const documentsIds = publishedData.map((i) => i.doi);
-    const scores = (
-      query
-        ? await pssScoreService.score(query, documentsIds, 'documents')
-        : {});
+    // perform scoring only if is enabled
+    if (pssScoreEnabled) {
+      // extract the ids of the dataset returned by SciCat
+      const documentsIds = publishedData.map((i) => i.doi);
+      const scores = (
+        query
+          ? await pssScoreService.score(query, documentsIds, "documents")
+          : {});
 
-    var scoredDocuments = await Promise.all(
-      publishedData.map(
-        async (data) => await responseMapper.document(data, filter, scores),
-      ),
-    );
-    if (query) {
-      scoredDocuments.sort(utils.compareDocuments)
+      var scoredDocuments = await Promise.all(
+        publishedData.map(
+          async (data) => await responseMapper.document(data, filter, scores),
+        ),
+      );
+      if (query) {
+        scoredDocuments.sort(utils.compareDocuments);
+      }
+      return (limit > 0 ? scoredDocuments.slice(0, limit) : scoredDocuments);
     }
-    return (limit > 0 ? scoredDocuments.slice(0, limit) : scoredDocuments);
+    else {
+      // no scoring, returns results as they are
+      return await Promise.all(
+        publishedData.map(
+          async (data) => await responseMapper.document(publishedData, filter)
+        )
+      );
+    }
   };
 
   /**

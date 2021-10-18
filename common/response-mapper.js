@@ -6,6 +6,7 @@ const ScicatService = require("./scicat-service");
 const scicatDatasetService = new ScicatService.Dataset();
 const scicatPublishedDataService = new ScicatService.PublishedData();
 const scicatSampleService = new ScicatService.Sample();
+const pssScoreEnabled = process.env.PSS_ENABLE || false;
 
 /**
  * Map a SciCat dataset to a PaNOSC dataset
@@ -86,7 +87,7 @@ exports.dataset = async (scicatDataset, filter, scores = {}) => {
       ? scicatDataset.techniques
       : [];
   }
-  if (Object.keys(scores).includes(dataset.pid)) {
+  if (pssScoreEnabled && Object.keys(scores).includes(dataset.pid)) {
     dataset.score = scores[dataset.pid];
   }
   return dataset;
@@ -157,7 +158,7 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
   if (Object.keys(inclusions).includes("parameters")) {
     document.parameters = [];
   }
-  if (Object.keys(scores).includes(document.pid)) {
+  if (pssScoreEnabled && Object.keys(scores).includes(document.pid)) {
     document.score = scores[document.pid];
   }
   return document;

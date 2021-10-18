@@ -5,6 +5,7 @@ const scicatDatasetService = new ScicatService.Dataset();
 
 const PSSService = require("../pss-service");
 const pssScoreService = new PSSService.Score();
+const pssScoreEnabled = process.env.PSS_ENABLE || false;
 
 const filterMapper = require("../filter-mapper");
 const responseMapper = require("../response-mapper");
@@ -19,27 +20,38 @@ module.exports = function (Dataset) {
   Dataset.find = async function (filter, query) {
     // remove filter limit
     var limit = -1;
-    if (filter && Object.keys(filter).includes("limit")) {
+    // remove limit from filters if scoreing is enabled
+    if (pssScoreEnabled && filter && Object.keys(filter).includes("limit")) {
       limit = filter.limit;
       delete filter.limit;
     }
     const scicatFilter = filterMapper.dataset(filter);
     const datasets = await scicatDatasetService.find(scicatFilter);
-    // extract the ids of the dataset returned by SciCat
-    const datasetsIds = datasets.map((i) => i.pid)
-    const scores = (
-      query
-        ? await pssScoreService.score(query, datasetsIds, 'datasets')
-        : {});
-    var scoredDatasets = await Promise.all(
-      datasets.map(
-        async (dataset) => await responseMapper.dataset(dataset, filter, scores),
-      )
-    );
-    if (query) {
-      scoredDatasets.sort(utils.compareDatasets)
+    // perform scoring only if it is enabled
+    if (pssScoreEnabled) {
+      // extract the ids of the dataset returned by SciCat
+      const datasetsIds = datasets.map((i) => i.pid)
+      const scores = (
+        query
+          ? await pssScoreService.score(query, datasetsIds, "datasets")
+          : {});
+      var scoredDatasets = await Promise.all(
+        datasets.map(
+          async (dataset) => await responseMapper.dataset(dataset, filter, scores),
+        )
+      );
+      if (query) {
+        scoredDatasets.sort(utils.compareDatasets);
+      }
+      return (limit > 0 ? scoredDatasets.slice(0, limit) : scoredDatasets);
     }
-    return (limit > 0 ? scoredDatasets.slice(0, limit) : scoredDatasets);
+    else {
+      return await Promise.all(
+        datasets.map(
+          async (dataset) => await responseMapper.dataset(datasets, filter)
+        )
+      );
+    }
   };
 
   /**
