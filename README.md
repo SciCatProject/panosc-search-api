@@ -23,3 +23,10 @@
    export FACILITY=<YOUR_FACILITY> # e.g. ESS
    ```
 5. `npm start`
+
+## Tests
+
+If PSS is enabled, the following parameters should provide a good enough testing:
+
+- filter={"limit":10}
+- query="temperatura kafka"

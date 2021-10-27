@@ -20,11 +20,20 @@ module.exports = function (Dataset) {
   Dataset.find = async function (filter, query) {
     // remove filter limit
     var limit = -1;
-    // remove limit from filters if scoreing is enabled
-    if (pssScoreEnabled && filter && Object.keys(filter).includes("limit")) {
-      limit = filter.limit;
-      delete filter.limit;
+    // retrieve scoring parameters if enabled
+    if (pssScoreEnabled) {
+      // remove limit only if scoreing is enabled
+      if (filter && Object.keys(filter).includes("limit")) {
+        limit = filter.limit;
+        delete filter.limit;
+      }
+      // check if query is passed in the filter
+      if (!query && filter && Object.keys(filter).includes("query")) {
+        query = filter.query;
+        delete filter.query;
+      }
     }
+
     const scicatFilter = filterMapper.dataset(filter);
     const datasets = await scicatDatasetService.find(scicatFilter);
     // perform scoring only if it is enabled

@@ -2,12 +2,13 @@ FROM node:16-alpine
 
 RUN apk update && apk upgrade
 
-ARG BASE_URL="https://scicat.ess.eu/api/v3"
-ARG FACILITY="ESS"
 
+# set environment variable for node app
 ENV NODE_ENV="production"
-ENV BASE_URL=${BASE_URL}
-ENV FACILITY=${FACILITY}
+ENV BASE_URL="https://scicat.ess.eu/api/v3"
+ENV FACILITY="ESS"
+ENV PSS_BASE_URL="http://scicat08.esss.lu.se:32222"
+ENV PSS_ENABLE=1
 
 # Prepare app directory
 WORKDIR /home/node/app
