@@ -259,7 +259,7 @@ exports.parameters = (scientificMetadata, filter) => {
     } else {
       return {
         name: key,
-        value: scientificMetadata[key].value || scientificMetadata[key].v,
+        value: (scientificMetadata[key].value !== null ? scientificMetadata[key].value : scientificMetadata[key].v),
         unit: scientificMetadata[key].unit || scientificMetadata[key].u,
       };
     }
