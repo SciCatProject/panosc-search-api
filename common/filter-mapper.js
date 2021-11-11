@@ -384,7 +384,7 @@ const mapWhereFilter = (where, model) => {
         const scientificMetadata = parameters.map(({ name, value, unit }) => {
           if (name) {
             const filter = { and: [] };
-            if (value) {
+            if (value !== null) {
               if (unit) {
                 if (isNaN(value)) {
                   const extractedValue = Object.values(value).pop();
