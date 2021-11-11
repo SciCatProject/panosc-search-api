@@ -32,7 +32,7 @@
     "loopback-component-explorer": "^6.5.1",
     "mathjs": "^7.6.0",
     "serve-favicon": "^2.5.0",
-    "snyk": "^1.713.0",
+    "snyk": "^1.742.0",
     "strong-error-handler": "^3.5.0",
     "superagent": "^5.3.1"
   },
