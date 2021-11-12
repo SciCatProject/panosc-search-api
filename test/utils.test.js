@@ -425,26 +425,4 @@ describe("utils", () => {
     );
   });
 
-  describe("intersectArraysOfObjects", () => {
-    context(
-      `Creates an object with key keyOfObject and value of arrays containing
-      the intersection of the object keyOfObject property`,
-      () => {
-        it(`Object with key keyOfObject and value of arrays containing the
-        intersection of the object keyOfObject property`, (done) => {
-          const input = [
-            { key: [123, 456, 789, "abc", "abc"] },
-            { key: ["abc", "def", 123] },
-            { key: ["abc", "ghi", 123] }
-          ];
-          const expected = {
-            key: [123, "abc"]
-          };
-          expect(utils.intersectArraysOfObjects(input, "key")).to.eql(expected);
-          done();
-        });
-      }
-    );
-  });
-
 });

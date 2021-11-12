@@ -2,7 +2,6 @@
 
 const expect = require("chai").expect;
 const sandbox = require("sinon").createSandbox();
-const utils = require("../common/utils");
 
 const BioPortalLoopbackCacheBuilder = require(
   "../common/technique-filter-builder").BioPortalLoopbackCacheBuilder;
@@ -121,7 +120,6 @@ describe("BioPortalLoopbackCacheBuilder", () => {
         the intersection of relatives`,
         (done) => {
           const args = [{ name: "a", pid: 1 }, { pid: 2 }];
-          const expected = [2, 1];
           const mock = sandbox.stub(
             techniqueCache, "buildTechniques").onCall(0).returns([
             { relatives: [1, 2] },
@@ -130,7 +128,10 @@ describe("BioPortalLoopbackCacheBuilder", () => {
             { relatives: [2, 5] },
             { relatives: [1, 7] }]
           );
-          const spy = sandbox.spy(utils, "intersectArraysOfObjects");
+          const expected = { and: [
+            { pid: { inq: [1, 2, 3, 4] } },
+            { pid: { inq: [2, 5, 1, 7] } }
+          ] };
           techniqueCache.and(args).then(
             data => {
               expect(data).to.be.eql(expected);
@@ -141,13 +142,6 @@ describe("BioPortalLoopbackCacheBuilder", () => {
                 ]
               })).to.true;
               expect(mock.getCall(1).calledWith({ pid: 2 })).to.true;
-              expect(spy.calledWith(
-                [
-                  { relatives: [2, 5, 1, 7] },
-                  { relatives: [1, 2, 3, 4] }
-                ],
-                "relatives"
-              )).to.true;
             });
           done();
         }

@@ -326,23 +326,3 @@ exports.unionArraysOfObjects = (listOfObjects, keyOfObject) => (
     )]
   }
 );
-
-/**
- * Intersects each array belonging to the same key of each object
- * @param {object} listOfObjects List of objects having a list as value of
- * keyOfObject
- * @param {object} keyOfObject Key to use to get the list from each object
- * @returns {object} Object with key keyOfObject and value of arrays containing
- * the intersection of the object keyOfObject property
- */
-
-exports.intersectArraysOfObjects = (listOfObjects, keyOfObject) => (
-  {
-    [keyOfObject]: listOfObjects.reduce((start, obj) =>
-      start ?
-        [...new Set(start.filter(i => obj[keyOfObject].includes(i)))] :
-        obj[keyOfObject],
-    null
-    )
-  }
-);

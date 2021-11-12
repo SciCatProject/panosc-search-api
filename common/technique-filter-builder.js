@@ -44,28 +44,20 @@ exports.BioPortalLoopbackCacheBuilder = class {
    * intersection of relatives
    * @param {object} filter PaNOSC loopback filter object
    * @returns {object} Object the filter + synonym, joined by an OR condition,
-   * and returns the intersection of relatives
+   * and returns the loopback filter with concatenated AND conditions
    */
 
   async and(filter) {
-    var techniques;
-    for (let f of filter) {
+    const techniques = filter.map(async f => {
       let synonym = this.constructor.createSynonym(f);
       if (synonym) {
         synonym = { or: [f, synonym] };
       }
-      if (techniques) {
-        const technique = await this.buildTechniques(synonym || f);
-        const union = utils.unionArraysOfObjects(technique, "relatives");
-        techniques = utils.intersectArraysOfObjects(
-          [union, techniques], "relatives");
-      } else {
-        techniques = await this.buildTechniques(synonym || f);
-        techniques = utils.unionArraysOfObjects(techniques, "relatives");
-      }
-      if (techniques.relatives.length === 0) break;
-    }
-    return techniques.relatives;
+      const technique = await this.buildTechniques(synonym || f);
+      const union = utils.unionArraysOfObjects(technique, "relatives");
+      return { pid: { inq: union.relatives } };
+    });
+    return { and: await Promise.all(techniques) };
   }
 
   /**
@@ -152,7 +144,7 @@ exports.BioPortalLoopbackCacheBuilder = class {
   async buildFilter(filter) {
     var techniques;
     if (filter.and) {
-      techniques = await this.and(filter.and);
+      return await this.and(filter.and);
     } else if (filter.or) {
       techniques = await this.or(filter.or);
     } else {
