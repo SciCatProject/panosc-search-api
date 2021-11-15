@@ -203,112 +203,187 @@ exports.sample = (filter) => {
 const mapWhereFilter = (where, model) => {
   let scicatWhere = {};
   switch (model) {
-    case "dataset": {
-      if (where.and) {
-        scicatWhere.and = where.and.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatDataset[key]]: item[key],
-            }))
-          )
-        );
-      } else if (where.or) {
-        scicatWhere.or = where.or.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatDataset[key]]: item[key],
-            }))
-          )
-        );
-      } else {
-        scicatWhere = Object.assign(
-          ...Object.keys(where).map((key) => ({
-            [mappings.panoscToScicatDataset[key]]: where[key],
+  case "dataset": {
+    if (where.and) {
+      scicatWhere.and = where.and.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatDataset[key]]: item[key],
           }))
-        );
-      }
-      break;
-    }
-    case "document": {
-      if (where.and) {
-        scicatWhere.and = where.and.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatDocument[key]]: item[key],
-            }))
-          )
-        );
-      } else if (where.or) {
-        scicatWhere.or = where.or.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatDocument[key]]: item[key],
-            }))
-          )
-        );
-      } else {
-        scicatWhere = Object.assign(
-          ...Object.keys(where).map((key) => ({
-            [mappings.panoscToScicatDocument[key]]: where[key],
+        )
+      );
+    } else if (where.or) {
+      scicatWhere.or = where.or.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatDataset[key]]: item[key],
           }))
-        );
-      }
-      break;
+        )
+      );
+    } else {
+      scicatWhere = Object.assign(
+        ...Object.keys(where).map((key) => ({
+          [mappings.panoscToScicatDataset[key]]: where[key],
+        }))
+      );
     }
-    case "files": {
-      if (where.and) {
-        scicatWhere.and = where.and.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatFile[key]]: item[key],
-            }))
-          )
-        );
-      } else if (where.or) {
-        scicatWhere.or = where.or.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatFile[key]]: item[key],
-            }))
-          )
-        );
-      } else {
-        scicatWhere = Object.assign(
-          ...Object.keys(where).map((key) => ({
-            [mappings.panoscToScicatFile[key]]: where[key],
+    break;
+  }
+  case "document": {
+    if (where.and) {
+      scicatWhere.and = where.and.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatDocument[key]]: item[key],
           }))
-        );
-      }
-      break;
+        )
+      );
+    } else if (where.or) {
+      scicatWhere.or = where.or.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatDocument[key]]: item[key],
+          }))
+        )
+      );
+    } else {
+      scicatWhere = Object.assign(
+        ...Object.keys(where).map((key) => ({
+          [mappings.panoscToScicatDocument[key]]: where[key],
+        }))
+      );
     }
-    case "instrument": {
-      if (where.and) {
-        scicatWhere.and = where.and;
-      } else if (where.or) {
-        scicatWhere.or = where.or;
+    break;
+  }
+  case "files": {
+    if (where.and) {
+      scicatWhere.and = where.and.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatFile[key]]: item[key],
+          }))
+        )
+      );
+    } else if (where.or) {
+      scicatWhere.or = where.or.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatFile[key]]: item[key],
+          }))
+        )
+      );
+    } else {
+      scicatWhere = Object.assign(
+        ...Object.keys(where).map((key) => ({
+          [mappings.panoscToScicatFile[key]]: where[key],
+        }))
+      );
+    }
+    break;
+  }
+  case "instrument": {
+    if (where.and) {
+      scicatWhere.and = where.and;
+    } else if (where.or) {
+      scicatWhere.or = where.or;
+    } else {
+      scicatWhere = where;
+    }
+    break;
+  }
+  case "members": {
+    if (where.and) {
+      break;
+    } else if (where.or) {
+      break;
+    } else {
+      scicatWhere.or = Object.values(where).reduce(
+        (value, it) => value.concat({ creator: it }, { authors: it }),
+        []
+      );
+    }
+    break;
+  }
+  case "parameters": {
+    if (where.and) {
+      const { name, value, unit } = utils.extractParamaterFilter(where);
+      if (name) {
+        scicatWhere.and = [];
+        if (value !== null) {
+          if (unit) {
+            if (isNaN(value)) {
+              const extractedValue = Object.values(value).pop();
+              if (Array.isArray(extractedValue)) {
+                const arrayValues = extractedValue.map((value) =>
+                  utils.convertToSI(value, unit)
+                );
+                const formattedValueSI = Object.assign(
+                  ...Object.keys(value).map((key) => ({
+                    [key]: arrayValues.map((item) => item.valueSI),
+                  }))
+                );
+                const unitSI = arrayValues.pop().unitSI;
+                scicatWhere.and.push({
+                  [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+                });
+                scicatWhere.and.push({
+                  [`scientificMetadata.${name}.unitSI`]: unitSI,
+                });
+              } else {
+                const { valueSI, unitSI } = utils.convertToSI(
+                  extractedValue,
+                  unit
+                );
+                const formattedValueSI = Object.assign(
+                  ...Object.keys(value).map((key) => ({ [key]: valueSI }))
+                );
+                scicatWhere.and.push({
+                  [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+                });
+                scicatWhere.and.push({
+                  [`scientificMetadata.${name}.unitSI`]: unitSI,
+                });
+              }
+            } else {
+              const { valueSI, unitSI } = utils.convertToSI(value, unit);
+              scicatWhere.and.push({
+                [`scientificMetadata.${name}.valueSI`]: valueSI,
+              });
+              scicatWhere.and.push({
+                [`scientificMetadata.${name}.unitSI`]: unitSI,
+              });
+            }
+          } else {
+            scicatWhere.and.push({
+              "or": [{
+                [`scientificMetadata.${name}.value`]: value
+              },
+              {
+                [`scientificMetadata.${name}.v`]: value
+              }]
+            });
+          }
+        } else {
+          const err = new Error();
+          err.name = "FilterError";
+          err.message = "Parameter value was not provided";
+          err.statusCode = 400;
+          throw err;
+        }
       } else {
-        scicatWhere = where;
+        const err = new Error();
+        err.name = "FilterError";
+        err.message = "Parameter name was not provided";
+        err.statusCode = 400;
+        throw err;
       }
-      break;
-    }
-    case "members": {
-      if (where.and) {
-        break;
-      } else if (where.or) {
-        break;
-      } else {
-        scicatWhere.or = Object.values(where).reduce(
-          (value, it) => value.concat({ creator: it }, { authors: it }),
-          []
-        );
-      }
-      break;
-    }
-    case "parameters": {
-      if (where.and) {
-        const { name, value, unit } = utils.extractParamaterFilter(where);
+    } else if (where.or) {
+      const parameters = where.or.map((condition) =>
+        utils.extractParamaterFilter(condition)
+      );
+      const scientificMetadata = parameters.map(({ name, value, unit }) => {
         if (name) {
-          scicatWhere.and = [];
+          const filter = { and: [] };
           if (value !== null) {
             if (unit) {
               if (isNaN(value)) {
@@ -323,10 +398,10 @@ const mapWhereFilter = (where, model) => {
                     }))
                   );
                   const unitSI = arrayValues.pop().unitSI;
-                  scicatWhere.and.push({
+                  filter.and.push({
                     [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
                   });
-                  scicatWhere.and.push({
+                  filter.and.push({
                     [`scientificMetadata.${name}.unitSI`]: unitSI,
                   });
                 } else {
@@ -337,24 +412,24 @@ const mapWhereFilter = (where, model) => {
                   const formattedValueSI = Object.assign(
                     ...Object.keys(value).map((key) => ({ [key]: valueSI }))
                   );
-                  scicatWhere.and.push({
+                  filter.and.push({
                     [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
                   });
-                  scicatWhere.and.push({
+                  filter.and.push({
                     [`scientificMetadata.${name}.unitSI`]: unitSI,
                   });
                 }
               } else {
                 const { valueSI, unitSI } = utils.convertToSI(value, unit);
-                scicatWhere.and.push({
+                filter.and.push({
                   [`scientificMetadata.${name}.valueSI`]: valueSI,
                 });
-                scicatWhere.and.push({
+                filter.and.push({
                   [`scientificMetadata.${name}.unitSI`]: unitSI,
                 });
               }
             } else {
-              scicatWhere.and.push({
+              filter.and.push({
                 "or": [{
                   [`scientificMetadata.${name}.value`]: value
                 },
@@ -363,10 +438,11 @@ const mapWhereFilter = (where, model) => {
                 }]
               });
             }
+            return filter;
           } else {
             const err = new Error();
             err.name = "FilterError";
-            err.message = "Parameter value was not provided";
+            err.message = "Parameter value vas not provided";
             err.statusCode = 400;
             throw err;
           }
@@ -377,157 +453,81 @@ const mapWhereFilter = (where, model) => {
           err.statusCode = 400;
           throw err;
         }
-      } else if (where.or) {
-        const parameters = where.or.map((condition) =>
-          utils.extractParamaterFilter(condition)
-        );
-        const scientificMetadata = parameters.map(({ name, value, unit }) => {
-          if (name) {
-            const filter = { and: [] };
-            if (value !== null) {
-              if (unit) {
-                if (isNaN(value)) {
-                  const extractedValue = Object.values(value).pop();
-                  if (Array.isArray(extractedValue)) {
-                    const arrayValues = extractedValue.map((value) =>
-                      utils.convertToSI(value, unit)
-                    );
-                    const formattedValueSI = Object.assign(
-                      ...Object.keys(value).map((key) => ({
-                        [key]: arrayValues.map((item) => item.valueSI),
-                      }))
-                    );
-                    const unitSI = arrayValues.pop().unitSI;
-                    filter.and.push({
-                      [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-                    });
-                    filter.and.push({
-                      [`scientificMetadata.${name}.unitSI`]: unitSI,
-                    });
-                  } else {
-                    const { valueSI, unitSI } = utils.convertToSI(
-                      extractedValue,
-                      unit
-                    );
-                    const formattedValueSI = Object.assign(
-                      ...Object.keys(value).map((key) => ({ [key]: valueSI }))
-                    );
-                    filter.and.push({
-                      [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-                    });
-                    filter.and.push({
-                      [`scientificMetadata.${name}.unitSI`]: unitSI,
-                    });
-                  }
-                } else {
-                  const { valueSI, unitSI } = utils.convertToSI(value, unit);
-                  filter.and.push({
-                    [`scientificMetadata.${name}.valueSI`]: valueSI,
-                  });
-                  filter.and.push({
-                    [`scientificMetadata.${name}.unitSI`]: unitSI,
-                  });
-                }
-              } else {
-                filter.and.push({
-                  "or": [{
-                    [`scientificMetadata.${name}.value`]: value
-                  },
-                  {
-                    [`scientificMetadata.${name}.v`]: value
-                  }]
-                });
-              }
-              return filter;
-            } else {
-              const err = new Error();
-              err.name = "FilterError";
-              err.message = "Parameter value vas not provided";
-              err.statusCode = 400;
-              throw err;
-            }
-          } else {
-            const err = new Error();
-            err.name = "FilterError";
-            err.message = "Parameter name was not provided";
-            err.statusCode = 400;
-            throw err;
-          }
-        });
-        if (
-          scientificMetadata.some((condition) =>
-            Object.keys(condition).includes("and")
-          )
-        ) {
-          scicatWhere.or = scientificMetadata;
+      });
+      if (
+        scientificMetadata.some((condition) =>
+          Object.keys(condition).includes("and")
+        )
+      ) {
+        scicatWhere.or = scientificMetadata;
+      } else {
+        if (scicatWhere.and) {
+          scicatWhere.and.push(scientificMetadata);
         } else {
-          if (scicatWhere.and) {
-            scicatWhere.and.push(scientificMetadata);
-          } else {
-            scicatWhere.and = scientificMetadata;
-          }
+          scicatWhere.and = scientificMetadata;
         }
-      } else {
-        const err = new Error();
-        err.name = "FilterError";
-        err.message = "Parameter filter requires at least a name and a value";
-        err.statusCode = 400;
-        throw err;
       }
-      break;
+    } else {
+      const err = new Error();
+      err.name = "FilterError";
+      err.message = "Parameter filter requires at least a name and a value";
+      err.statusCode = 400;
+      throw err;
     }
-    case "samples": {
-      if (where.and) {
-        scicatWhere.and = where.and.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatSample[key]]: item[key],
-            }))
-          )
-        );
-      } else if (where.or) {
-        scicatWhere.or = where.or.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatSample[key]]: item[key],
-            }))
-          )
-        );
-      } else {
-        scicatWhere = Object.assign(
-          ...Object.keys(where).map((key) => ({
-            [mappings.panoscToScicatSample[key]]: where[key],
+    break;
+  }
+  case "samples": {
+    if (where.and) {
+      scicatWhere.and = where.and.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatSample[key]]: item[key],
           }))
-        );
-      }
-      break;
-    }
-    case "techniques": {
-      if (where.and) {
-        scicatWhere.and = where.and.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatTechniques[key]]: item[key],
-            }))
-          )
-        );
-      } else if (where.or) {
-        scicatWhere.or = where.or.map((item) =>
-          Object.assign(
-            ...Object.keys(item).map((key) => ({
-              [mappings.panoscToScicatTechniques[key]]: item[key],
-            }))
-          )
-        );
-      } else {
-        scicatWhere = Object.assign(
-          ...Object.keys(where).map((key) => ({
-            [mappings.panoscToScicatTechniques[key]]: where[key],
+        )
+      );
+    } else if (where.or) {
+      scicatWhere.or = where.or.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatSample[key]]: item[key],
           }))
-        );
-      }
-      break;
+        )
+      );
+    } else {
+      scicatWhere = Object.assign(
+        ...Object.keys(where).map((key) => ({
+          [mappings.panoscToScicatSample[key]]: where[key],
+        }))
+      );
     }
+    break;
+  }
+  case "techniques": {
+    if (where.and) {
+      scicatWhere.and = where.and.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatTechniques[key]]: item[key],
+          }))
+        )
+      );
+    } else if (where.or) {
+      scicatWhere.or = where.or.map((item) =>
+        Object.assign(
+          ...Object.keys(item).map((key) => ({
+            [mappings.panoscToScicatTechniques[key]]: item[key],
+          }))
+        )
+      );
+    } else {
+      scicatWhere = Object.assign(
+        ...Object.keys(where).map((key) => ({
+          [mappings.panoscToScicatTechniques[key]]: where[key],
+        }))
+      );
+    }
+    break;
+  }
   }
   return scicatWhere;
 };
@@ -542,29 +542,29 @@ const mapIncludeFilter = (include) =>
   include.map((item) => {
     let inclusion = {};
     switch (item.relation) {
-      case "files": {
-        inclusion.relation = "origdatablocks";
-        if (item.scope) {
-          inclusion.scope = {};
-          if (item.scope.where) {
-            inclusion.scope.where = mapWhereFilter(
-              item.scope.where,
-              item.relation
-            );
-          }
+    case "files": {
+      inclusion.relation = "origdatablocks";
+      if (item.scope) {
+        inclusion.scope = {};
+        if (item.scope.where) {
+          inclusion.scope.where = mapWhereFilter(
+            item.scope.where,
+            item.relation
+          );
         }
-        break;
       }
-      case "instrument": {
-        inclusion.relation = "instrument";
-        if (item.scope) {
-          if (item.scope.where && item.scope.where.facility) {
-            delete item.scope.where.facility;
-          }
-          inclusion.scope = item.scope;
+      break;
+    }
+    case "instrument": {
+      inclusion.relation = "instrument";
+      if (item.scope) {
+        if (item.scope.where && item.scope.where.facility) {
+          delete item.scope.where.facility;
         }
-        break;
+        inclusion.scope = item.scope;
       }
+      break;
+    }
     }
     return inclusion;
   });

@@ -94,14 +94,14 @@ describe("Dataset", () => {
     });
 
     const renameKeys = (ds, init = {}, nameMap = { value: "v", unit: "u" }) =>
-      Object.keys(ds).reduce((o, k) =>
-      (
-        typeof ds[k] === "object" && ds[k] !== null ?
-          (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
+      Object.keys(ds).reduce((o, k) => (
+        typeof ds[k] === "object" && ds[k] !== null
+          ? (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
           : o[nameMap[k] || k] = ds[k],
         o
       ),
-        init);
+      init);
+
     const testsPhotonEnergy = [
       {
         args: mockStubs.dataset.find.photonEnergyFilter,
@@ -114,6 +114,7 @@ describe("Dataset", () => {
         message: "v and u inside scientificMetadata"
       }
     ];
+
     testsPhotonEnergy.forEach(({ args, message }) => {
       context(
         "where parameters has a photon energy in the range 880-990 eV",

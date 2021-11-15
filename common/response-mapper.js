@@ -269,7 +269,7 @@ exports.parameters = (scientificMetadata, filter) => {
             : (
               scientificMetadata[key].u !== undefined && scientificMetadata[key].u !== null
                 ? scientificMetadata[key].u
-                : ''))
+                : ""))
       };
     }
   });
