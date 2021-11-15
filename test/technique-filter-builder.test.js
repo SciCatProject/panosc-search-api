@@ -82,6 +82,49 @@ describe("BioPortalLoopbackCacheBuilder", () => {
     });
   });
 
+  describe("transformToPositive", () => {
+    const tests = [{
+      args: { name: "a" },
+      expected: [{ name: "a" }, false],
+      message: "simple filter"
+    },
+    {
+      args: { name: { eq: "a" } },
+      expected: [{ name: { eq: "a" } }, false],
+      message: "one level filter unchanged"
+    },
+    {
+      args: { name: { neq: "a" } },
+      expected: [{ name: { eq: "a" } }, true],
+      message: "one level filter made positive"
+    },
+    {
+      args: { name: { name1: { neq: "a" } } },
+      expected: [{ name: { name1: { eq: "a" } } }, true],
+      message: "two level filter made positive"
+    },
+    {
+      args: { name: { neq: { name1: "a" } } },
+      expected: [{ name: { eq: { name1: "a" } } }, true],
+      message: "two level filter made positive, swapped"
+    }
+    ];
+    tests.forEach(({ args, expected, message }) => {
+      context(
+        `Returns modified loopback filter, ${message}`,
+        () => {
+          it(`${message}`,
+            (done) => {
+              expect(
+                techniqueCache.transformToPositive(args)).to.be.eql(
+                expected);
+              done();
+            });
+        }
+      );
+    });
+  });
+
   describe("flat", () => {
     context(
       `Starting from loopback filter it adds synonym to it and returns the
@@ -91,7 +134,7 @@ describe("BioPortalLoopbackCacheBuilder", () => {
         the relatives`,
         (done) => {
           const args = { name: "a", pid: 1 };
-          const expected = [1, 2, 3, 4];
+          const expected = { pid: { inq: [1, 2, 3, 4] } };
           const mock = sandbox.stub(techniqueCache,
             "buildTechniques").returns([
             { relatives: [1, 2] },
@@ -132,7 +175,7 @@ describe("BioPortalLoopbackCacheBuilder", () => {
             { pid: { inq: [1, 2, 3, 4] } },
             { pid: { inq: [2, 5, 1, 7] } }
           ] };
-          techniqueCache.and(args).then(
+          techniqueCache.andOr(args, "and").then(
             data => {
               expect(data).to.be.eql(expected);
               expect(mock.getCall(0).calledWith({
@@ -142,6 +185,44 @@ describe("BioPortalLoopbackCacheBuilder", () => {
                 ]
               })).to.true;
               expect(mock.getCall(1).calledWith({ pid: 2 })).to.true;
+            });
+          done();
+        }
+        );
+      });
+  });
+
+  describe("or", () => {
+    context(
+      `Starting from loopback OR filter it adds synonym to it and returns the
+      intersection of relatives`,
+      () => {
+        it(`Object the filter + synonym, joined by an OR condition, and returns
+        the intersection of relatives`,
+        (done) => {
+          const args = [{ name: "a", pid: 1 }, { pid: { neq: 2 } }];
+          const mock = sandbox.stub(
+            techniqueCache, "buildTechniques").onCall(0).returns([
+            { relatives: [1, 2] },
+            { relatives: [3, 4] }]
+          ).onCall(1).returns([
+            { relatives: [2, 5] },
+            { relatives: [1, 7] }]
+          );
+          const expected = { or: [
+            { pid: { inq: [1, 2, 3, 4] } },
+            { pid: { nin: [2, 5, 1, 7] } }
+          ] };
+          techniqueCache.andOr(args, "or").then(
+            data => {
+              expect(data).to.be.eql(expected);
+              expect(mock.getCall(0).calledWith({
+                or: [
+                  { name: "a", pid: 1 },
+                  { synonym: "a", pid: 1 }
+                ]
+              })).to.true;
+              expect(mock.getCall(1).calledWith({ pid: { eq:2 } })).to.true;
             });
           done();
         }
@@ -174,8 +255,9 @@ describe("BioPortalLoopbackCacheBuilder", () => {
         () => {
           it(`${message}`,
             (done) => {
-              const mock = sandbox.stub(techniqueCache, expected).returns([]);
-              techniqueCache.buildFilter(args).then(() =>
+              const mock = sandbox.stub(techniqueCache,
+                expected == "flat"? expected: "andOr").returns([]);
+              techniqueCache.buildFilter(args, expected).then(() =>
                 expect(mock.callCount).to.be.eql(1)
               );
               done();

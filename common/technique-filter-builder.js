@@ -37,62 +37,73 @@ exports.BioPortalLoopbackCacheBuilder = class {
   constructor(config) {
     this.techniqueGetter = new techniqueGetter.BioPortalTechniques(config);
     this.cache = new cache.LoopbackCache(config.cache);
+    this.isNegative = { false: "inq", true: "nin" };
+    this.negationMap = {
+      neq: "eq", nin: "inq", nlike: "like", nilike: "ilike"
+    };
   }
 
   /**
-   * Starting from loopback AND filter it adds synonym to it and returns the
-   * intersection of relatives
+   * Starting from loopback AND or OR filter it adds synonym to it and returns
+   * the relatives combined in an AND or OR filter
    * @param {object} filter PaNOSC loopback filter object
+   * @param {string} condition AND or OR string
    * @returns {object} Object the filter + synonym, joined by an OR condition,
-   * and returns the loopback filter with concatenated AND conditions
+   * and returns the loopback filter with concatenated AND or OR conditions
    */
 
-  async and(filter) {
-    const techniques = filter.map(async f => {
-      let synonym = this.constructor.createSynonym(f);
-      if (synonym) {
-        synonym = { or: [f, synonym] };
-      }
-      const technique = await this.buildTechniques(synonym || f);
-      const union = utils.unionArraysOfObjects(technique, "relatives");
-      return { pid: { inq: union.relatives } };
-    });
-    return { and: await Promise.all(techniques) };
+  async andOr(filter, condition) {
+    const techniques = filter.map(async f => await this.flat(f));
+    return { [condition]: await Promise.all(techniques) };
   }
 
   /**
    * Starting from loopback filter it adds synonym to it and returns the
-   * relatives
+   * relatives, combined in a INQ or NIN filter depending if there is a negative
+   * condition in the original filter
    * @param {object} filter PaNOSC loopback filter object
    * @returns {object} Object the filter + synonym, joined by an OR condition,
-   * and returns the relatives
+   * and returns the relatives, creating a filter {pid: inq/nin: [...]}
+   * depending if there is a negative condition in the original filter
    */
 
   async flat(filter) {
-    const synonymFilter = this.constructor.createSynonym(filter);
+    const [f, isNegative] = this.transformToPositive(filter);
+    const synonymFilter = this.constructor.createSynonym(f);
     const techniques = await this.buildTechniques(
-      synonymFilter ? { or: [filter, synonymFilter] } : filter);
-    return utils.unionArraysOfObjects(techniques, "relatives").relatives;
+      synonymFilter ? { or: [f, synonymFilter] } : f);
+    return {
+      pid: {
+        [this.isNegative[isNegative]]: utils.unionArraysOfObjects(
+          techniques, "relatives").relatives
+      }
+    };
   }
 
   /**
-   * Starting from loopback OR filter it adds synonym to it and returns the
-   * union of relatives
+   * Returns a loopback filter having changed the negative conditions to
+   * positive and a boolean condition, which is true when a change was made,
+   * false otherwise
    * @param {object} filter PaNOSC loopback filter object
-   * @returns {object} Object the filter + synonym, joined by an OR condition,
-   * and returns the union of relatives
+   * @param {object} start object used to store the final PaNOSC loopback filter
+   * @param {Array} negatives array used to store if a negative condition
+   * was met
+   * @returns {[object, boolean]} PaNOSC loopback filter, having changed the
+   * negative conditions and a boolean condition, which is true when a change
+   * was made, false otherwise
    */
 
-  async or(filter) {
-    const fullFilter = filter.reduce((start, f) => {
-      const synonym = this.constructor.createSynonym(f);
-      if (synonym) {
-        return start.concat([f, synonym]);
+  transformToPositive(filter, start = {}, negatives = []) {
+    return [Object.keys(filter).reduce((o, key) => {
+      if (this.negationMap[key]) negatives.push(true);
+      const k = this.negationMap[key] || key;
+      if (typeof filter[key] === "object" && filter[key] !== null) {
+        o[k] = {};
+        this.transformToPositive(filter[key], o[k], negatives);
       }
-      return start.concat(f);
-    }, []);
-    const techniques = await this.buildTechniques({ or: fullFilter });
-    return utils.unionArraysOfObjects(techniques, "relatives").relatives;
+      else o[k] = filter[key];
+      return o;
+    }, start), negatives[0] || false];
   }
 
   /**
@@ -142,15 +153,15 @@ exports.BioPortalLoopbackCacheBuilder = class {
    */
 
   async buildFilter(filter) {
-    var techniques;
+    var outFilter;
     if (filter.and) {
-      return await this.and(filter.and);
+      outFilter = await this.andOr(filter.and, "and");
     } else if (filter.or) {
-      techniques = await this.or(filter.or);
+      outFilter = await this.andOr(filter.or, "or");
     } else {
-      techniques = await this.flat(filter);
+      outFilter = await this.flat(filter);
     }
-    return { pid: { inq: techniques } };
+    return outFilter;
   }
 
   /**
