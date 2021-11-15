@@ -248,9 +248,7 @@ describe("Dataset", () => {
                   expect(dataset).to.have.property("score");
                   expect(dataset).to.have.property("parameters");
                   expect(dataset.parameters).to.be.an("array").and.not.empty;
-                  dataset.parameters.forEach((parameter) => {
-                    expect([parameter.name, parameter.value]).to.equal(["chemical_formula", "Cu"]).or.to.equal(["sample_state", "solid"]);
-                  })
+                  expect(dataset.parameters).contains({ "name": "chemical_formula", "value": "Cu" }).or.contains({ "name": "sample_state", "value": "solid" })
                 });
                 done();
               });
