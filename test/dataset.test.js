@@ -94,14 +94,14 @@ describe("Dataset", () => {
     });
 
     const renameKeys = (ds, init = {}, nameMap = { value: "v", unit: "u" }) =>
-      Object.keys(ds).reduce((o, k) => 
-        (
-          typeof ds[k] === "object" && ds[k] !== null ?
-            (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
-            : o[nameMap[k] || k] = ds[k],
-          o
-        ),
-      init);
+      Object.keys(ds).reduce((o, k) =>
+      (
+        typeof ds[k] === "object" && ds[k] !== null ?
+          (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
+          : o[nameMap[k] || k] = ds[k],
+        o
+      ),
+        init);
     const testsPhotonEnergy = [
       {
         args: mockStubs.dataset.find.photonEnergyFilter,
@@ -248,10 +248,9 @@ describe("Dataset", () => {
                   expect(dataset).to.have.property("score");
                   expect(dataset).to.have.property("parameters");
                   expect(dataset.parameters).to.be.an("array").and.not.empty;
-                  expect(dataset.parameters[0].name).to.equal("chemical_formula");
-                  expect(dataset.parameters[0].value).to.equal("Cu");
-                  expect(dataset.parameters[1].name).to.equal("sample_state");
-                  expect(dataset.parameters[1].value).to.equal("solid");
+                  dataset.parameters.forEach((parameter) => {
+                    expect([parameter.name, parameter.value]).to.equal(["chemical_formula", "Cu"]).or.to.equal(["sample_state", "solid"]);
+                  })
                 });
                 done();
               });
