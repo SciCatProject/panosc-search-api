@@ -248,8 +248,7 @@ describe("Dataset", () => {
                   expect(dataset).to.have.property("score");
                   expect(dataset).to.have.property("parameters");
                   expect(dataset.parameters).to.be.an("array").and.not.empty;
-                  console.log(dataset);
-                  expect(dataset.parameters).to.deep.include({ "name": "chemical_formula", "value": "Cu" }).or.deep.include({ "name": "sample_state", "value": "solid" })
+                  expect(dataset.parameters).to.deep.include.any.members([{ "name": "chemical_formula", "value": "Cu", "unit": "" }, { "name": "sample_state", "value": "solid", "unit": "" }]);
                 });
                 done();
               });

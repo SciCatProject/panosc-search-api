@@ -259,8 +259,17 @@ exports.parameters = (scientificMetadata, filter) => {
     } else {
       return {
         name: key,
-        value: (scientificMetadata[key].value !== null ? scientificMetadata[key].value : scientificMetadata[key].v),
-        unit: scientificMetadata[key].unit || scientificMetadata[key].u,
+        value: (
+          scientificMetadata[key].value !== undefined && scientificMetadata[key].value !== null
+            ? scientificMetadata[key].value
+            : scientificMetadata[key].v),
+        unit: (
+          scientificMetadata[key].unit !== undefined && scientificMetadata[key].unit !== null
+            ? scientificMetadata[key].unit
+            : (
+              scientificMetadata[key].u !== undefined && scientificMetadata[key].u !== null
+                ? scientificMetadata[key].u
+                : ''))
       };
     }
   });
