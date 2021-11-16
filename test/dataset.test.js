@@ -94,14 +94,14 @@ describe("Dataset", () => {
     });
 
     const renameKeys = (ds, init = {}, nameMap = { value: "v", unit: "u" }) =>
-      Object.keys(ds).reduce((o, k) =>
-        (
-          typeof ds[k] === "object" && ds[k] !== null ?
-            (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
-            : o[nameMap[k] || k] = ds[k],
-          o
-        ),
+      Object.keys(ds).reduce((o, k) => (
+        typeof ds[k] === "object" && ds[k] !== null
+          ? (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
+          : o[nameMap[k] || k] = ds[k],
+        o
+      ),
       init);
+
     const testsPhotonEnergy = [
       {
         args: mockStubs.dataset.find.photonEnergyFilter,
@@ -114,6 +114,7 @@ describe("Dataset", () => {
         message: "v and u inside scientificMetadata"
       }
     ];
+
     testsPhotonEnergy.forEach(({ args, message }) => {
       context(
         "where parameters has a photon energy in the range 880-990 eV",
@@ -248,10 +249,7 @@ describe("Dataset", () => {
                   expect(dataset).to.have.property("score");
                   expect(dataset).to.have.property("parameters");
                   expect(dataset.parameters).to.be.an("array").and.not.empty;
-                  expect(dataset.parameters[0].name).to.equal("chemical_formula");
-                  expect(dataset.parameters[0].value).to.equal("Cu");
-                  expect(dataset.parameters[1].name).to.equal("sample_state");
-                  expect(dataset.parameters[1].value).to.equal("solid");
+                  expect(dataset.parameters).to.deep.include.any.members([{ "name": "chemical_formula", "value": "Cu", "unit": "" }, { "name": "sample_state", "value": "solid", "unit": "" }]);
                 });
                 done();
               });
