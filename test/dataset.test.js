@@ -38,6 +38,7 @@ describe("Dataset", () => {
 
             expect(res.body).to.be.an("array");
             res.body.forEach((dataset) => {
+              console.log(dataset);
               expect(dataset).to.have.property("pid");
               expect(dataset).to.have.property("title");
               expect(dataset).to.have.property("isPublic");
@@ -94,7 +95,7 @@ describe("Dataset", () => {
     });
 
     const renameKeys = (ds, init = {}, nameMap = { value: "v", unit: "u" }) =>
-      Object.keys(ds).reduce((o, k) => 
+      Object.keys(ds).reduce((o, k) =>
         (
           typeof ds[k] === "object" && ds[k] !== null ?
             (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))

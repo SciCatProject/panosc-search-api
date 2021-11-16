@@ -39,7 +39,7 @@ module.exports = function (Dataset) {
     // perform scoring only if it is enabled
     if (pssScoreEnabled) {
       // extract the ids of the dataset returned by SciCat
-      const datasetsIds = datasets.map((i) => i.pid)
+      const datasetsIds = datasets.map((i) => i.pid);
       const scores = (
         query
           ? await pssScoreService.score(query, datasetsIds, "datasets")

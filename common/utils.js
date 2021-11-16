@@ -151,21 +151,21 @@ exports.extractParamaterFilter = (where) => {
       Object.keys(condition).includes("name"),
     )
       ? where.and.find((condition) => Object.keys(condition).includes("name"))[
-      "name"
+        "name"
       ]
       : null;
     const value = where.and.find((condition) =>
       Object.keys(condition).includes("value"),
     )
       ? where.and.find((condition) => Object.keys(condition).includes("value"))[
-      "value"
+        "value"
       ]
       : null;
     const unit = where.and.find((condition) =>
       Object.keys(condition).includes("unit"),
     )
       ? where.and.find((condition) => Object.keys(condition).includes("unit"))[
-      "unit"
+        "unit"
       ]
       : null;
     return { name, value, unit };
@@ -221,7 +221,7 @@ exports.compareDatasets = (a, b) => {
     return 1;
   }
   return 0;
-}
+};
 
 /**
  * compare two documents entry
@@ -247,4 +247,4 @@ exports.compareDocuments = (a, b) => {
     return 1;
   }
   return 0;
-}
+};
