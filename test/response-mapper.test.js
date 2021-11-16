@@ -40,7 +40,7 @@ describe("response-mapper", () => {
           }
         },
         expected: [
-          { name: "name1", value: "Cu", unit: undefined }
+          { name: "name1", value: "Cu", unit: "" }
         ],
         message: "list with a parameter without running unit conversion"
       },
