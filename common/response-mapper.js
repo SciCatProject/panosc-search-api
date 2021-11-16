@@ -236,9 +236,14 @@ exports.members = (scicatPublishedData, filter) => {
  */
 
 exports.parameters = (scientificMetadata, filter) => {
-  const parameters = utils.extractParamaterFilterMapping(
-    filter.where.or ? filter.where.or : [filter.where]
-  );
+  const parameters =
+    Object.keys(filter).includes("where")
+      ? utils.extractParamaterFilterMapping(
+        filter.where.or
+          ? filter.where.or
+          : [filter.where]
+      )
+      : {};
   return Object.keys(scientificMetadata).map((key) => {
     if (parameters[key] && parameters[key].unit) {
       const { value, unit } = utils.convertToUnit(
@@ -254,8 +259,17 @@ exports.parameters = (scientificMetadata, filter) => {
     } else {
       return {
         name: key,
-        value: scientificMetadata[key].value || scientificMetadata[key].v,
-        unit: scientificMetadata[key].unit || scientificMetadata[key].u,
+        value: (
+          scientificMetadata[key].value !== undefined && scientificMetadata[key].value !== null
+            ? scientificMetadata[key].value
+            : scientificMetadata[key].v),
+        unit: (
+          scientificMetadata[key].unit !== undefined && scientificMetadata[key].unit !== null
+            ? scientificMetadata[key].unit
+            : (
+              scientificMetadata[key].u !== undefined && scientificMetadata[key].u !== null
+                ? scientificMetadata[key].u
+                : ""))
       };
     }
   });

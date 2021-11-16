@@ -18,12 +18,15 @@ exports.dataset = (filter) => {
       scicatFilter.where = mapWhereFilter(filter.where, "dataset");
     }
     if (filter.include) {
-      const parameters = filter.include.find(
+      const parameters = filter.include.filter(
         (inclusion) => inclusion.relation === "parameters"
       );
-      if (parameters && parameters.scope && parameters.scope.where) {
-        scicatFilter = mapField(parameters, scicatFilter);
-      }
+      parameters.forEach(parameter => {
+        if (parameter.scope && parameter.scope.where) {
+          scicatFilter = mapField(parameter, scicatFilter);
+        }
+      });
+
       const techniques = filter.include.find(
         (inclusion) => inclusion.relation === "techniques"
       );
@@ -306,7 +309,7 @@ const mapWhereFilter = (where, model) => {
       const { name, value, unit } = utils.extractParamaterFilter(where);
       if (name) {
         scicatWhere.and = [];
-        if (value) {
+        if (value !== null) {
           if (unit) {
             if (isNaN(value)) {
               const extractedValue = Object.values(value).pop();
@@ -381,7 +384,7 @@ const mapWhereFilter = (where, model) => {
       const scientificMetadata = parameters.map(({ name, value, unit }) => {
         if (name) {
           const filter = { and: [] };
-          if (value) {
+          if (value !== null) {
             if (unit) {
               if (isNaN(value)) {
                 const extractedValue = Object.values(value).pop();
