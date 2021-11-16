@@ -2,12 +2,26 @@ FROM node:16-alpine
 
 RUN apk update && apk upgrade
 
+# please change the following variable according to your deployment
+# the current values are set for ESS environment
+ARG NODE_ENV="production"
 ARG BASE_URL="https://scicat.ess.eu/api/v3"
 ARG FACILITY="ESS"
+ARG PSS_BASE_URL="http://scicat08.esss.lu.se:32222"
+ARG PSS_ENABLE=1
+#
+# if your deployment does not have any the search scoring services
+# you should configure the PSS variables as follow:
+#ARG PSS_BASE_URL=""
+#ARG PSS_ENABLE=0
+#
 
-ENV NODE_ENV="production"
-ENV BASE_URL=${BASE_URL}
-ENV FACILITY=${FACILITY}
+# set environment variable for node app
+ENV NODE_ENV="${NODE_ENV}"
+ENV BASE_URL="${BASE_URL}"
+ENV FACILITY="${FACILITY}"
+ENV PSS_BASE_URL="${PSS_BASE_URL}"
+ENV PSS_ENABLE=${PSS_ENABLE}
 
 # Prepare app directory
 WORKDIR /home/node/app

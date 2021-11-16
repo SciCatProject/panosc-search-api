@@ -6,6 +6,7 @@ const ScicatService = require("./scicat-service");
 const scicatDatasetService = new ScicatService.Dataset();
 const scicatPublishedDataService = new ScicatService.PublishedData();
 const scicatSampleService = new ScicatService.Sample();
+const pssScoreEnabled = process.env.PSS_ENABLE || false;
 
 /**
  * Map a SciCat dataset to a PaNOSC dataset
@@ -14,13 +15,14 @@ const scicatSampleService = new ScicatService.Sample();
  * @returns {object} PaNOSC dataset object
  */
 
-exports.dataset = async (scicatDataset, filter) => {
+exports.dataset = async (scicatDataset, filter, scores = {}) => {
   const dataset = {
     pid: scicatDataset.pid,
     title: scicatDataset.datasetName,
     isPublic: scicatDataset.isPublished,
     size: scicatDataset.size,
     creationDate: scicatDataset.creationTime,
+    score: 0.0
   };
 
   const inclusions = utils.getInclusions(filter);
@@ -85,6 +87,9 @@ exports.dataset = async (scicatDataset, filter) => {
       ? scicatDataset.techniques
       : [];
   }
+  if (pssScoreEnabled && Object.keys(scores).includes(dataset.pid)) {
+    dataset.score = scores[dataset.pid];
+  }
   return dataset;
 };
 
@@ -95,7 +100,7 @@ exports.dataset = async (scicatDataset, filter) => {
  * @returns {object} PaNOSC document object
  */
 
-exports.document = async (scicatPublishedData, filter) => {
+exports.document = async (scicatPublishedData, filter, scores = {}) => {
   const document = {
     pid: scicatPublishedData.doi,
     isPublic: true,
@@ -103,6 +108,7 @@ exports.document = async (scicatPublishedData, filter) => {
     title: scicatPublishedData.title,
     summary: scicatPublishedData.abstract,
     doi: scicatPublishedData.doi,
+    score: 0.0
   };
 
   const inclusions = utils.getInclusions(filter);
@@ -151,6 +157,9 @@ exports.document = async (scicatPublishedData, filter) => {
   }
   if (Object.keys(inclusions).includes("parameters")) {
     document.parameters = [];
+  }
+  if (pssScoreEnabled && Object.keys(scores).includes(document.pid)) {
+    document.score = scores[document.pid];
   }
   return document;
 };
