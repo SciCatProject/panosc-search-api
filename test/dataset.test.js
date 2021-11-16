@@ -38,7 +38,6 @@ describe("Dataset", () => {
 
             expect(res.body).to.be.an("array");
             res.body.forEach((dataset) => {
-              console.log(dataset);
               expect(dataset).to.have.property("pid");
               expect(dataset).to.have.property("title");
               expect(dataset).to.have.property("isPublic");

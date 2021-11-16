@@ -6,7 +6,9 @@ const baseUrl = process.env.PSS_BASE_URL || "http://localhost:8000";
 
 exports.Score = class {
 
-  pss_score_url = baseUrl + "/score";
+  constructor() {
+    this.pssScoreUrl = baseUrl + "/score";
+  }
 
   /**
    * request scoring to PSS subsystem
@@ -25,20 +27,19 @@ exports.Score = class {
     console.log(" - limit : ", limit);
 
     const res = await superagent
-      .post(this.pss_score_url)
+      .post(this.pssScoreUrl)
       .send({
         query: query,
         itemIds: itemIds,
         group: group,
         limit: limit
-      })
+      });
 
-    const json_res = JSON.parse(res.text);
+    const jsonRes = JSON.parse(res.text);
 
-    const scores = Object.assign({}, ...json_res.scores.map((i) => ({ [i.itemId]: i.score })));
-    //const scores = json_res.scores.reduce((a,i) => ({...a, [i.itemId]: i.score}), {})
+    const scores = Object.assign({}, ...jsonRes.scores.map((i) => ({ [i.itemId]: i.score })));
 
-    return scores
+    return scores;
   }
 
-}
+};

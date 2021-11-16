@@ -57,7 +57,7 @@ module.exports = function (Dataset) {
     else {
       return await Promise.all(
         datasets.map(
-          async (dataset) => await responseMapper.dataset(datasets, filter)
+          async (dataset) => await responseMapper.dataset(dataset, filter)
         )
       );
     }

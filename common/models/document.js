@@ -59,7 +59,7 @@ module.exports = function (Document) {
       // no scoring, returns results as they are
       return await Promise.all(
         publishedData.map(
-          async (data) => await responseMapper.document(publishedData, filter)
+          async (data) => await responseMapper.document(data, filter)
         )
       );
     }
