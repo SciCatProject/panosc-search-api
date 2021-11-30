@@ -114,7 +114,7 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
   const inclusions = utils.getInclusions(filter);
 
   if (Object.keys(inclusions).includes("datasets")) {
-    const scicatFilter = filterMapper.dataset(inclusions.datasets);
+    const scicatFilter = await filterMapper.dataset(inclusions.datasets);
     const pidArray = scicatPublishedData.pidArray.map((pid) =>
       pid.split("/")[0] === pid.split("/")[1]
         ? pid.split("/").slice(1).join("/")
