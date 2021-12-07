@@ -1,5 +1,6 @@
 "use strict";
 
+const jsdom = require("jsdom");
 const superagent = require("superagent");
 
 const utils = require("./utils");
@@ -95,6 +96,122 @@ class OntologyTechnique {
 
   parents() {
     throw new Error("Method 'parents()' must be implemented.");
+  }
+
+}
+
+class GitHubOwlTechnique extends OntologyTechnique {
+
+  /**
+   * Sets repoURL, commit and file to use to get data from GitHub
+   * @param {object} config Object with the repoURL, commit and file to use to
+   * access GitHub
+   */
+
+  constructor(config) {
+    super();
+    config = config || {};
+    this.repoURL = config.repoURL ||
+      "https://raw.githubusercontent.com/ExPaNDS-eu/ExPaNDS-experimental-techniques-ontology";
+    this.commit = config.commit || "master";
+    this.file = config.file || "source/PaNET.owl";
+    this.parentsSet = new Set();
+    this.keys.push(...["prefLabel", "synonym"]);
+  }
+
+  /**
+   * Sets the url to use
+   */
+
+  composeURL() {
+    this.url = new URL(
+      `${this.commit}/${this.file}`,
+      this.repoURL.endsWith("/") ? this.repoURL : `${this.repoURL}/`
+    );
+  }
+
+  /**
+   * Filters the response from the GitHub file to get owl classes
+   * @returns {HTMLElement} Jsdom element containing the owl classes
+   */
+
+  async getCollection() {
+    this.composeURL();
+    const xmlFile = await superagent.get(this.url);
+    const xmlParsed = new jsdom.JSDOM(xmlFile.text);
+    return xmlParsed.window.document.querySelectorAll(
+      "owl\\:Class[rdf\\:about]");
+  }
+
+  /**
+   * Returns the pid from the jsdom element removing extra white spaces
+   * @returns {string} The pid from the jsdom element
+   */
+
+  pid(item, key = "rdf:about") {
+    return item.getAttribute(key);
+  }
+
+  /**
+   * Returns the prefLabel from the jsdom element removing extra white spaces
+   * @returns {string} The prefLabel from the jsdom element
+   */
+
+  prefLabel(item) {
+    const label = item.getElementsByTagName("rdfs:label")[0];
+    return label ? utils.removeExtraSpaces(label.textContent) :
+      utils.removeExtraSpaces(this.pid(item).split("/").pop());
+  }
+
+  /**
+   * Returns the synonym list from the jsdom element removing extra white spaces
+   * @returns {string[]} The synonym list from the jsdom element
+   */
+
+  synonym(item) {
+    const altLabel = item.getElementsByTagName("skos:altLabel");
+    const synonyms = [];
+    for (let i = 0; i < altLabel.length; i++)
+      synonyms.push(utils.removeExtraSpaces(altLabel[i].textContent));
+    return synonyms;
+  }
+
+  /**
+   * Returns the parents list from the jsdom element removing extra white spaces
+   * @returns {string[]} The parents list from the jsdom element
+   */
+
+  parents(item) {
+    const subClassOf = item.getElementsByTagName("rdfs:subClassOf");
+    const _parents = [];
+    for (let i = 0; i < subClassOf.length; i++) {
+      const parent = this.pid(subClassOf[i], "rdf:resource");
+      _parents.push(parent);
+      this.parentsSet.add(parent);
+    }
+    return _parents;
+  }
+
+  /**
+   * Calls the parent buildNodes method and creates the leaves list
+   * @returns {object} An object as described in the parent method
+   */
+
+  buildNodes(collection) {
+    const o = super.buildNodes(collection);
+    o["leaves"] = this.filterLeaves();
+    return o;
+  }
+
+  /**
+   * Returns the pids of the leaves and appends to an array
+   * @returns {Array} An array with pid of the leaves
+   */
+
+  filterLeaves() {
+    return this.collection.reduce(
+      (out, e) => (!this.parentsSet.has(e.pid) ? out.push(e.pid) : null, out),
+      []);
   }
 
 }
@@ -223,4 +340,5 @@ class BioPortalTechniques extends OntologyTechnique {
 
 }
 
+exports.GitHubOwlTechnique = GitHubOwlTechnique;
 exports.BioPortalTechniques = BioPortalTechniques;

@@ -242,3 +242,149 @@ describe("BioPortalTechniques", () => {
   });
 
 });
+
+describe("GitHubOwlTechnique", () => {
+  let GitHubOwlTechnique;
+  beforeEach(() => {
+    GitHubOwlTechnique = new techniqueGetter.GitHubOwlTechnique({
+      repoURL: "http://aurl", file: "aFile", commit: "aCommit"
+    });
+  });
+
+  const xmlMock = require("./MockStubs").xmlContent;
+  const querySelectorMock =  require("./MockStubs").querySelectorXml;
+
+  describe("composeURL", () => {
+    const expectedURL = "http://aurl/aCommit/aFile";
+    const tests = [
+      {
+        args: new techniqueGetter.GitHubOwlTechnique({
+          repoURL: "http://aurl", file: "aFile", commit: "aCommit"
+        }),
+        expected: expectedURL,
+        message: "without /"
+      },
+      {
+        args: new techniqueGetter.GitHubOwlTechnique({
+          repoURL: "http://aurl/", file: "aFile", commit: "aCommit"
+        }),
+        expected: expectedURL,
+        message: "with /"
+      }
+    ];
+    tests.forEach(({ args, expected, message }) => {
+      context(
+        `Composes an url based on the config file ${message}`,
+        () => {
+          it(`${message}`,
+            (done) => {
+              args.composeURL();
+              expect(args.url.toString()).to.be.eql(expected);
+              done();
+            });
+        }
+      );
+    });
+  });
+
+  describe("getCollection", () => {
+    it("checks the length of the returned collection", (done) => {
+      sandbox.stub(
+        superagent, "get").returns({ text: xmlMock });
+      GitHubOwlTechnique.getCollection().then(data =>
+        expect(data.length).to.be.eql(3)
+      );
+      done();
+    });
+  });
+
+  describe("pid", () => {
+    it("checks the pid from the xml queried file", (done) => {
+      const item = querySelectorMock[0];
+      expect(GitHubOwlTechnique.pid(item)).to.be.eql("class1");
+      done();
+    });
+  });
+
+  describe("prefLabel", () => {
+    const tests = [
+      {
+        args: querySelectorMock[0],
+        expected: "label1", message: "from label"
+      },
+      {
+        args: querySelectorMock[1],
+        expected: "label2", message: "from about split"
+      }
+    ];
+    tests.forEach(({ args, expected, message }) => {
+      it(`${message}`, (done) => {
+        expect(GitHubOwlTechnique.prefLabel(args)).to.be.eql(expected);
+        done();
+      });
+    });
+  });
+
+  describe("synonym", () => {
+    it("checks the synonym from the xml queried file", (done) => {
+      const item = querySelectorMock[1];
+      expect(GitHubOwlTechnique.synonym(item)).to.be.eql(
+        ["synonym1", "synonym2"]);
+      done();
+    });
+  });
+
+  describe("parents", () => {
+    it("checks the synonym from the xml queried file", (done) => {
+      const item = querySelectorMock[2];
+      const parents = ["class1", "http://class2/label2"];
+      expect(GitHubOwlTechnique.parents(item)).to.be.eql(parents);
+      expect(GitHubOwlTechnique.parentsSet).to.be.eql(new Set(parents));
+      done();
+    });
+  });
+
+  describe("filterLeaves", () => {
+    it("Returns the pids of the leaves and appends to an array", (done) => {
+      GitHubOwlTechnique.collection = [{ pid: 1 }, { pid:2 }, { pid:3 }];
+      GitHubOwlTechnique.parentsSet = new Set([1, 2]);
+      expect(GitHubOwlTechnique.filterLeaves()).to.be.eql([3]);
+      done();
+    });
+  });
+
+  describe("build", () => {
+    it("builds nodes from the xml file", (done) => {
+      const expected = {
+        collection: [
+          {
+            pid: "class1", prefLabel: "label1",
+            parents: [], synonym: []
+          },
+          {
+            pid: "http://class2/label2", prefLabel: "label2",
+            parents: ["class1"], synonym: ["synonym1", "synonym2"]
+          },
+          {
+            pid: "class3", prefLabel: "label3",
+            parents: ["class1", "http://class2/label2"], synonym: []
+          }
+        ],
+        relatives: {
+          class1: new Set(["class1", "http://class2/label2", "class3"]),
+          "http://class2/label2": new Set(["http://class2/label2", "class3"]),
+          class3: new Set(["class3"])
+        }
+      };
+      sandbox.stub(GitHubOwlTechnique, "getCollection").resolves(
+        querySelectorMock);
+      GitHubOwlTechnique.build().then(data => {
+        expect(data.collection).to.be.eql(expected.collection);
+        expect(data.relatives).to.be.eql(expected.relatives);
+      });
+      done();
+    });
+
+  });
+
+});
