@@ -3,16 +3,16 @@
 const expect = require("chai").expect;
 const sandbox = require("sinon").createSandbox();
 
-const BioPortalLoopbackCacheBuilder = require(
-  "../common/technique-filter-builder").BioPortalLoopbackCacheBuilder;
+const OntologyTechniquesLoopbackCacheBuilder = require(
+  "../common/technique-filter-builder").OntologyTechniquesLoopbackCacheBuilder;
 
 afterEach((done) => {
   sandbox.restore();
   done();
 });
 
-describe("BioPortalLoopbackCacheBuilder", () => {
-  const techniqueCache = new BioPortalLoopbackCacheBuilder(
+describe("OntologyTechniquesLoopbackCacheBuilder", () => {
+  const techniqueCache = new OntologyTechniquesLoopbackCacheBuilder(
     {
       url: "http://aUrl.com", apiKey: "aKey",
       cache: { sttl: 10, collection: "Technique" }

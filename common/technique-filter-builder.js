@@ -25,7 +25,7 @@ exports.FreeFormTechniques = class {
 
 };
 
-exports.BioPortalLoopbackCacheBuilder = class {
+exports.OntologyTechniquesLoopbackCacheBuilder = class {
 
   /**
    * Creates an instance of BioPortalTechniques and LoopbackCache with the
@@ -35,8 +35,10 @@ exports.BioPortalLoopbackCacheBuilder = class {
    */
 
   constructor(config) {
-    this.techniqueGetter = new techniqueGetter.BioPortalTechniques(config);
-    this.cache = new cache.LoopbackCache(config.cache);
+    this.techniqueGetter = new techniqueGetter[
+      config.class || "GitHubOwlTechnique"](config);
+    this.cache = new cache[
+      config.cache.class || "LoopbackCache"](config.cache);
     this.isNegative = { false: "inq", true: "nin" };
     this.negationMap = {
       neq: "eq", nin: "inq", nlike: "like", nilike: "ilike"
@@ -192,11 +194,7 @@ exports.BioPortalLoopbackCacheBuilder = class {
 
 };
 
-exports.BioPortalTechniques = {
-  LoopbackCache: this.BioPortalLoopbackCacheBuilder
-};
-
 exports.technique = new (config.technique ?
-  this[config.technique.class][config.technique.cache.class]:
+  this.OntologyTechniquesLoopbackCacheBuilder :
   this["FreeFormTechniques"]
 )(config.technique);
