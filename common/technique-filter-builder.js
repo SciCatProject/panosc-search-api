@@ -131,13 +131,13 @@ exports.BioPortalLoopbackCacheBuilder = class {
 
   static * prepareForCache(tech, keyMap = {
     name: "prefLabel", synonym: "synonym",
-    pid: "@id"
+    pid: "pid"
   }) {
     var index = 0;
     while (index < tech.collection.length) {
       const out = Object.keys(keyMap).reduce((o, km) => (
         o[km] = tech.collection[index][keyMap[km]], o), {});
-      out.relatives = [...tech.nodes.relatives[out.pid]];
+      out.relatives = [...tech.relatives[out.pid]];
       out.createdAt = Date.now();
       yield out;
       index++;

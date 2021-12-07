@@ -326,3 +326,11 @@ exports.unionArraysOfObjects = (listOfObjects, keyOfObject) => (
     )]
   }
 );
+
+/**
+ * Given a string, it removes the extra spaces
+ * @param {string} item A string, potentially with extra spaces
+ * @returns {string} The item, without the extra spaces
+ */
+
+exports.removeExtraSpaces = (item) => (item.replace(/\s+/g, " ").trim());

@@ -1,9 +1,105 @@
 "use strict";
 
 const superagent = require("superagent");
+
 const utils = require("./utils");
 
-exports.BioPortalTechniques = class {
+
+class OntologyTechnique {
+
+  /**
+   * Sets the list of keys to parse the response
+   */
+
+  constructor() {
+    this.keys = ["pid", "parents"];
+  }
+
+  /**
+   * From the list of responses it applies a first processing, applying the
+   * methods defined in the class which have the name of the keys.
+   * @param {object[]} collection List of objects each being an item from the
+   * response
+   * @returns {Generator} Generator having applied the methods defined in the
+   * class which have the name of the keys
+   */
+
+  * processCollection(collection) {
+    this.collection = [];
+    let index = 0;
+    while (index < collection.length) {
+      const col = collection[index];
+      const processed = this.keys.reduce((obj, key) => {
+        obj[key] = this[key](col);
+        return obj;
+      }, {});
+      yield processed;
+      this.collection.push(processed);
+      index++;
+    }
+  }
+
+  /**
+   * From the list of responses, it creates an object where firstKey is the
+   * type of object and as value a second object with an id and where the value
+   * is the response.firstKey
+   * @param {object[]} collection List of objects each being an item from the
+   * response
+   * @returns {Object} Object where firstKey is the type of object and as value
+   * a second object with an id and where the value is response.firstKey
+   */
+
+  buildNodes(collection) {
+    const o = { "leaves": [], "parents": {} };
+    for (var node of collection) {
+      const _id = node["pid"];
+      this.leavesNode(node, o);
+      o["parents"][_id] = node["parents"];
+    }
+    return o;
+  }
+
+  /**
+   * Defines a function to use to compute the leaves nodes
+   */
+
+  leavesNode() { }
+
+  /**
+   * Builds and sets a graph with key the id of the item and value the
+   * relatives (ancestor or descendants)
+   * @returns {OntologyTechnique} Returns the instance with the attributes set
+   */
+
+  async build() {
+    this.composeURL();
+    const collection = this.processCollection(
+      await this.getCollection());
+    const nodes = this.buildNodes(collection);
+    const relatives = utils.buildForest(nodes.leaves, nodes.parents);
+    this.relatives = relatives;
+    return this;
+  }
+
+  /**
+   * Enforces pid implementation
+   */
+
+  pid() {
+    throw new Error("Method 'pid()' must be implemented.");
+  }
+
+  /**
+   * Enforces prefLabel implementation
+   */
+
+  parents() {
+    throw new Error("Method 'parents()' must be implemented.");
+  }
+
+}
+
+class BioPortalTechniques extends OntologyTechnique {
 
   /**
    * Sets url and apikey to use to get data from BioPortal
@@ -12,8 +108,11 @@ exports.BioPortalTechniques = class {
    */
 
   constructor(config) {
+    super();
+    config = config || {};
     this.url = config.url;
     this.apiKey = config.apiKey;
+    this.keys.push(...["prefLabel", "synonym", "children"]);
   }
 
   /**
@@ -55,124 +154,73 @@ exports.BioPortalTechniques = class {
   }
 
   /**
-   * From the list of responses from BioPortal,
-   * it creates an object where firstKey is the type of object
-   * and as value a second object with an id and where the value is BioPortal
-   * response.firstKey
-   * @param {object[]} collection List of objects each being an item from the
-   * response from BioPortal
-   * @returns {Object} Object where firstKey is the type of object
-   * and as value a second object with an id and where the value is BioPortal
-   * response.firstKey
+   * Removes the extra white spaces from the input item
+   * @param {object} item Object with values with extra white spaces
+   * @returns {string} String with extra white spaces removed
    */
 
-  static buildNodes(collection) {
-    const o = {
-      "names": {}, "@id": {}, "children": {}, "synonym": {},
-      "synonymT": {}, "leaves": [], "parents": {}, "roots": []
-    };
-    for (var node of collection) {
-      const _id = node["@id"];
-      o["names"][_id] = node["prefLabel"];
-      o["@id"][node["prefLabel"]] = _id;
-      o["children"][_id] = node["children"];
-      o["synonym"][_id] = node["synonym"];
-      if (node["synonym"]) node["synonym"].map(
-        synonym => o["synonymT"][synonym] = _id);
-      if (node["children"].length == 0) o["leaves"].push(_id);
-      o["parents"][_id] = node["parents"];
-      if (o["parents"][_id].length == 0) o["roots"].push(_id);
-    }
-    return o;
+  pid(item) {
+    return item["@id"];
   }
 
   /**
    * Removes the extra white spaces from the input item
-   * @param {string} item String potentially with extra white spaces
+   * @param {object} item Object with values with extra white spaces
    * @returns {string} String with extra white spaces removed
    */
 
-  static prefLabel(item) {
-    return item.replace(/\s+/g, " ").trim();
+  prefLabel(item) {
+    return utils.removeExtraSpaces(item.prefLabel);
   }
 
   /**
    * Removes the extra white spaces from each string in the array
-   * @param {string[]} item Array of strings potentially with extra white spaces
+   * @param {object} item Object of values potentially with extra white spaces
    * @returns {string[]} Array of strings with extra white spaces removed
    */
 
-  static synonym(item) {
-    return item.map(this.prefLabel);
+  synonym(item) {
+    return item.synonym.map(e => utils.removeExtraSpaces(e));
   }
 
   /**
    * Takes the element '@id' from each object in the item array
-   * @param {object[]} item Array of objects each with '@id' key
+   * @param {object} item Object of values each with '@id' key
    * @returns {string[]} Array of strings being the value of '@id' in each
    * object in the input array
    */
 
-  static children(item) {
-    return item.map(child => child["@id"]);
+  children(item) {
+    return item.children.map(child => child["@id"]);
   }
 
   /**
    * Takes the element '@id' from each object in the item array unless all
    * objects in the array have prefLabel null, thus return []
-   * @param {object[]} item Array of objects each with '@id' and prefLabel keys
+   * @param {object} item Object of values each with '@id' and prefLabel keys
    * @returns {string[]} Array of strings being the value of '@id' in each
    * object in the input array or []
    */
 
-  static parents(item) {
-    if (item.filter(e => e["prefLabel"]).length == 0) {
+  parents(item) {
+    if (item.parents.filter(e => e["prefLabel"]).length == 0) {
       return [];
     }
     else {
-      return item.map(parent => parent["@id"]);
+      return item.parents.map(parent => parent["@id"]);
     }
   }
 
   /**
-   * From the list of responses from BioPortal it applies a first processing,
-   * applying the methods defined in the class which have the name of the keys.
-   * @param {object[]} collection List of objects each being an item from the
-   * response from BioPortal
-   * @returns {Generator} Generator having applied the methods defined in the
-   * class which have the name of the keys
+   * If the node has no children it add it to the leaves list
+   * @param {object} node Object with at least children and pid keys
+   * @param {object} o Object containing the leaves value where to add leaves
    */
 
-  * processCollection(collection) {
-    this.collection = [];
-    let index = 0;
-    while (index < collection.length) {
-      const col = collection[index];
-      const processed = Object.keys(col).reduce((obj, key) => {
-        obj[key] = this.constructor[key] ?
-          this.constructor[key](col[key]) : col[key];
-        return obj;
-      }, {});
-      yield processed;
-      this.collection.push(processed);
-      index++;
-    }
+  leavesNode(node, o) {
+    if (node["children"].length == 0) o["leaves"].push(node.pid);
   }
 
-  /**
-   * Builds and sets a graph with key the id of the BioPortal item and value
-   * the relatives (ancestor or descendants)
-   * @returns {BioPortalTechniques} Returns the instance with the attributes set
-   */
+}
 
-  async build() {
-    this.composeURL();
-    const collection = this.processCollection(
-      await this.getCollection());
-    const nodes = this.constructor.buildNodes(collection);
-    nodes.relatives = utils.buildForest(nodes.leaves, nodes.parents);
-    this.nodes = nodes;
-    return this;
-  }
-
-};
+exports.BioPortalTechniques = BioPortalTechniques;

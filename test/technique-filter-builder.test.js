@@ -26,10 +26,10 @@ describe("BioPortalLoopbackCacheBuilder", () => {
         it("A generator with a format that can be used by LoopbackCache",
           (done) => {
             const args = {
-              nodes: { relatives: { 1: new Set([2, 3]), 2: new Set([3, 4]) } },
+              relatives: { 1: new Set([2, 3]), 2: new Set([3, 4]) },
               collection: [
-                { "@id": 1, prefLabel: "a", synonym: ["A"], aField: "f" },
-                { "@id": 2, prefLabel: "b", synonym: ["B"] }]
+                { pid: 1, prefLabel: "a", synonym: ["A"], aField: "f" },
+                { pid: 2, prefLabel: "b", synonym: ["B"] }]
             };
             const expected = [
               {
@@ -275,9 +275,9 @@ describe("BioPortalLoopbackCacheBuilder", () => {
           (done) => {
             const args = { name: "a", pid: 1 };
             sandbox.stub(techniqueCache.techniqueGetter, "build");
-            techniqueCache.techniqueGetter.nodes = { relatives: { 1: [1, 2] } };
+            techniqueCache.techniqueGetter.relatives = { 1: [1, 2] };
             techniqueCache.techniqueGetter.collection = [{
-              "@id": 1, prefLabel: "a", synonym: ["A"], aField: "f"
+              pid: 1, prefLabel: "a", synonym: ["A"], aField: "f"
             }];
             const expected = {
               pid: 1, name: "a", synonym: ["A"],

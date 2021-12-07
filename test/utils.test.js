@@ -1,6 +1,7 @@
 "use strict";
 
 const expect = require("chai").expect;
+
 const utils = require("../common/utils");
 
 describe("utils", () => {
@@ -423,6 +424,21 @@ describe("utils", () => {
         });
       }
     );
+  });
+
+  describe("removeExtraSpaces", () => {
+    const tests = [
+      { args: "a b      c ", expected: "a b c", message: "with extra spaces" },
+      { args: "d e f", expected: "d e f", message: "with no extra spaces" }
+    ];
+    tests.forEach(({ args, expected, message }) => {
+      context(`String with ${message}`, () => {
+        it(`The item with ${message} replaced`, (done) => {
+          expect(utils.removeExtraSpaces(args)).to.eql(expected);
+          done();
+        });
+      });
+    });
   });
 
 });

@@ -4,26 +4,26 @@ const expect = require("chai").expect;
 const sandbox = require("sinon").createSandbox();
 const superagent = require("superagent");
 
+const techniqueGetter = require("../common/technique-getter");
 
-const BioPortalTechniques = require(
-  "../common/technique-getter").BioPortalTechniques;
+
 afterEach((done) => {
   sandbox.restore();
   done();
 });
 
 describe("BioPortalTechniques", () => {
-  const technique = new BioPortalTechniques(
+  const BioPortalTechniques = new techniqueGetter.BioPortalTechniques(
     { url: "http://aUrl.com", apiKey: "aKey" });
   describe("composeURL", () => {
     context(
       "Sets the url, the queryParams and the headers to use",
       () => {
         it("Sets the url, the queryParams and the headers to use", (done) => {
-          technique.composeURL();
-          expect(technique.url instanceof URL).to.true;
-          expect(technique.headers).to.not.be.null;
-          expect(technique.queryParams).to.not.be.null;
+          BioPortalTechniques.composeURL();
+          expect(BioPortalTechniques.url instanceof URL).to.true;
+          expect(BioPortalTechniques.headers).to.not.be.null;
+          expect(BioPortalTechniques.queryParams).to.not.be.null;
           done();
         });
       }
@@ -36,9 +36,9 @@ describe("BioPortalTechniques", () => {
       "Returns the item with extra spaces removed",
       () => {
         it("Item with extra spaces removed", (done) => {
-          const args = "a bb     cc d";
+          const args = { prefLabel: "a bb     cc d" };
           const expected = "a bb cc d";
-          expect(technique.constructor.prefLabel(args)).to.be.eql(expected);
+          expect(BioPortalTechniques.prefLabel(args)).to.be.eql(expected);
           done();
         });
       }
@@ -50,9 +50,9 @@ describe("BioPortalTechniques", () => {
       "Returns the item removing extra spaces",
       () => {
         it("Item removing extra spaces", (done) => {
-          const args = ["b", "c  d    e"];
+          const args = { synonym: ["b", "c  d    e"] };
           const expected = ["b", "c d e"];
-          expect(technique.constructor.synonym(args)).to.be.eql(expected);
+          expect(BioPortalTechniques.synonym(args)).to.be.eql(expected);
           done();
         });
       }
@@ -64,9 +64,9 @@ describe("BioPortalTechniques", () => {
       "Returns the item unpacking the array of objects",
       () => {
         it("Item unpacking the array of objects", (done) => {
-          const args = [{ "@id": 1 }, { "@id": 2 }];
+          const args = { children: [{ "@id": 1 }, { "@id": 2 }] };
           const expected = [1, 2];
-          expect(technique.constructor.children(args)).to.be.eql(expected);
+          expect(BioPortalTechniques.children(args)).to.be.eql(expected);
           done();
         });
       }
@@ -78,12 +78,12 @@ describe("BioPortalTechniques", () => {
       "Returns the item unpacking the array of objects",
       () => {
         it("Item unpacking the array of objects", (done) => {
-          const args = [
+          const args = { parents: [
             { prefLabel: null, "@id": 1 },
             { prefLabel: null, "@id": 2 }
-          ];
+          ] };
           const expected = [];
-          expect(technique.constructor.parents(args)).to.be.eql(expected);
+          expect(BioPortalTechniques.parents(args)).to.be.eql(expected);
           done();
         });
       }
@@ -99,7 +99,7 @@ describe("BioPortalTechniques", () => {
           const args = [
             {
               prefLabel: "a",
-              pid: 1,
+              "@id": 1,
               synonym: ["aa    b b", "c"],
               children: [{ "@id": 1 }, { "@id": 2 }],
               parents: [
@@ -116,10 +116,10 @@ describe("BioPortalTechniques", () => {
             }
           ];
           const results = [];
-          for (var result of technique.processCollection(args))
+          for (var result of BioPortalTechniques.processCollection(args))
             results.push(result);
           expect(results).to.be.eql(expected);
-          expect(technique.collection).to.be.eql(expected);
+          expect(BioPortalTechniques.collection).to.be.eql(expected);
           done();
         });
       }
@@ -135,31 +135,21 @@ describe("BioPortalTechniques", () => {
         object with an id and the value`, (done) => {
           const args = [
             {
-              prefLabel: "a",
-              "@id": 1,
-              synonym: ["aa", "c"],
+              pid: 1,
               children: [],
               parents: [3, 4]
             },
             {
-              prefLabel: "b",
-              "@id": 2,
-              synonym: [],
+              pid: 2,
               children: [1, 2],
               parents: []
             }
           ];
           const expected = {
-            names: { 1: "a", 2: "b" },
-            "@id": { a: 1, b: 2 },
-            children: { 1: [], 2: [1, 2] },
             parents: { 1: [3, 4], 2: [] },
-            synonym: { 1: ["aa", "c"], 2: [] },
-            synonymT: { "aa": 1, "c": 1 },
             leaves: [1],
-            roots: [2]
           };
-          expect(technique.constructor.buildNodes(args)).to.be.eql(expected);
+          expect(BioPortalTechniques.buildNodes(args)).to.be.eql(expected);
           done();
         });
       }
@@ -185,7 +175,7 @@ describe("BioPortalTechniques", () => {
           const mock = sandbox
             .stub(superagent, "get");
           mock.returns(stubReturn);
-          technique.getCollection().then(
+          BioPortalTechniques.getCollection().then(
             () => expect(mock.callCount).to.be.eql(4)
           );
           done();
@@ -199,7 +189,7 @@ describe("BioPortalTechniques", () => {
       `Builds and sets a graph with key the id of the BioPortal item and value
       the relatives (ancestor or descendants)`,
       () => {
-        it(`Sets a graph with key the id of the BioPortal item and value the 
+        it(`Sets a graph with key the id of the BioPortal item and value the
         relatives (ancestor or descendants)`, (done) => {
           const args = [
             {
@@ -220,40 +210,30 @@ describe("BioPortalTechniques", () => {
             }
           ];
           const expected = {
-            nodes: {
-              names: { 1: "a", 2: "b" },
-              "@id": { a: 1, b: 2 },
-              children: { 1: [2], 2: [] },
-              parents: { 1: [], 2: [1] },
-              synonym: { 1: ["A"], 2: [] },
-              synonymT: { "A": 1 },
-              leaves: [2],
-              roots: [1],
-              relatives: { 1: new Set([1, 2]), 2: new Set([2]) }
-            },
+            relatives: { 1: new Set([1, 2]), 2: new Set([2]) },
             collection:
               [
                 {
                   prefLabel: "a",
-                  "@id": 1,
+                  pid: 1,
                   synonym: ["A"],
                   children: [2],
                   parents: []
                 },
                 {
                   prefLabel: "b",
-                  "@id": 2,
+                  pid: 2,
                   synonym: [],
                   children: [],
                   parents: [1]
                 }
               ]
           };
-          sandbox.stub(technique, "getCollection").resolves(
+          sandbox.stub(BioPortalTechniques, "getCollection").resolves(
             args);
-          technique.build().then(data => {
+          BioPortalTechniques.build().then(data => {
             expect(data.collection).to.be.eql(expected.collection);
-            expect(data.nodes).to.be.eql(expected.nodes);
+            expect(data.relatives).to.be.eql(expected.relatives);
           });
           done();
         });
