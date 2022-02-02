@@ -73,7 +73,7 @@
     "public": false
   },
   "Technique": {
-    "dataSource": "db",
+    "dataSource": null,
     "public": false
   }
 }
