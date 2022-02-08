@@ -1,5 +1,6 @@
 "use strict";
 
+const PanetOntology = require("../common/panet-service").PanetOntology;
 const mappings = require("./mappings");
 const utils = require("./utils");
 
@@ -31,6 +32,8 @@ exports.dataset = async (filter) => {
         (inclusion) => inclusion.relation === "techniques"
       );
       if (techniques && techniques.scope && techniques.scope.where) {
+        techniques.scope.where = await PanetOntology.panet(
+          techniques.scope.where);
         scicatFilter = mapField(techniques, scicatFilter);
       }
       const include = filter.include
