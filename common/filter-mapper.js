@@ -1,7 +1,6 @@
 "use strict";
 
 const mappings = require("./mappings");
-const { technique } = require("./technique-filter-builder");
 const utils = require("./utils");
 
 /**
@@ -32,7 +31,6 @@ exports.dataset = async (filter) => {
         (inclusion) => inclusion.relation === "techniques"
       );
       if (techniques && techniques.scope && techniques.scope.where) {
-        techniques.scope.where = await technique.buildFilter(techniques.scope.where);
         scicatFilter = mapField(techniques, scicatFilter);
       }
       const include = filter.include
