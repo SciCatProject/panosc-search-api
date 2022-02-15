@@ -25,7 +25,10 @@ class Panet {
     const res = await superagent
       .get(this.panetUrl)
       .query({ where: JSON.stringify(techniqueLoopbackWhere) });
-    return JSON.parse(res.text);
+
+    const newTechniqueLoopbackWhere = JSON.parse(res.text);
+    console.log(" - where filter : ", newTechniqueLoopbackWhere);
+    return newTechniqueLoopbackWhere;
   }
 
 }

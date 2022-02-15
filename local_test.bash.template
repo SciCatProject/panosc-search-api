@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# run panosc search api locally on the machine that is run
+# it uses official scicat and PSS
+
+# port on which the local instance of PaNOSC search api is listening
+# 
+export PORT=<PORT>
+#
+# PaNOSC Search Scoring base url
+# leave it empty if service is diabled
+export PSS_BASE_URL=""
+#
+# PaNOSC Search Scoring is enabled (1) or not (1)
+export PSS_ENABLE=0
+#
+# base url of the SciCat instance that we want to use in our local test
+export BASE_URL="<SciCat-base-url>"
+#
+# name of the facility or meaningful string to identify this instance
+export FACILITY="PaNOSC-search-api-local-test"
+#
+# base url of the PaNET ontology service
+# Leave it empty if it is not used
+export PANET_BASE_URL="<PaNET-Techniques-Ontologies>"
+
+npm start
