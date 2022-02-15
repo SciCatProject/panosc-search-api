@@ -20,4 +20,5 @@ npm-debug.log
 
 .vscode
 local_test.bash
+local_test_*.bash
 
