@@ -5,7 +5,7 @@ exports.panoscToScicatDataset = {
   title: "datasetName",
   isPublic: "isPublished",
   size: "size",
-  creationTime: "creationDate",
+  creationDate: "creationTime",
 };
 
 exports.panoscToScicatDocument = {
