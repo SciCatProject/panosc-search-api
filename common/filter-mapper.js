@@ -4,6 +4,43 @@ const PanetOntology = require("../common/panet-service").PanetOntology;
 const mappings = require("./mappings");
 const utils = require("./utils");
 
+
+/**
+   * Expands the techniques where clause
+   * @param {object} filter
+   * @returns {object}
+   */
+const expandTechniques = async (where) => {
+  return await PanetOntology.panet(where);
+};
+
+const expandTechniquesInFilter = async (filter) => {
+  if (filter && filter.include) {
+    filter.include = await Promise.all(
+      filter.include.map(async (v1) => {
+        if ( v1.relation == "datasets" && v1.scope && v1.scope.include) {
+          v1.scope.include = await Promise.all(
+            v1.scope.include.map(async (v2) => {
+              if (v2.relation=="techniques" && v2.scope && v2.scope.where ) {
+                v2.scope.where = await expandTechniques(v2.scope.where);
+              }
+              return v2;
+            })
+          );
+        }
+        return v1;
+      })
+    );
+  }
+  return filter;
+};
+
+exports.expandTechniquesInFilter = async (filter) => {
+  return await expandTechniquesInFilter(filter);
+};
+
+
+
 /**
  * Map PaNOSC dataset filter to SciCat dataset filter
  * @param {object} filter PaNOSC loopback filter object
@@ -32,8 +69,9 @@ exports.dataset = async (filter) => {
         (inclusion) => inclusion.relation === "techniques"
       );
       if (techniques && techniques.scope && techniques.scope.where) {
-        techniques.scope.where = await PanetOntology.panet(
-          techniques.scope.where);
+        //techniques.scope.where = await PanetOntology.panet(
+        //  techniques.scope.where);
+        //console.log("techniques.scope.where", techniques.scope.where);
         scicatFilter = mapField(techniques, scicatFilter);
       }
       const include = filter.include

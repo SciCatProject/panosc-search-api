@@ -1,6 +1,31 @@
 "use strict";
 
 const math = require("mathjs");
+//const panetOntology = require("./panet-service").PanetOntology;
+
+
+/**
+ * Expands the techniques where clause
+ * @param {object} filter
+ * @returns {object}
+ *//*
+exports.expandTechniques = async function (filter) {
+  if (filter && filter.include) {
+
+    filter.include = filter.include.map((i) => {
+      if (i.relation=="techniques" && i.scope && i.scope.where ) {
+        i.scope.where = await panetOntology.panet(i.scope.where);
+      }
+      else if ( i.scope && i.scope.include ) {
+        i.scope.include = i.scope.include.maps(expandTechniques);
+      }
+    })
+  }
+
+  return filter
+}*/
+
+
 
 /**
  * Get inclusions from filter
@@ -18,6 +43,7 @@ exports.getInclusions = (filter) =>
       ),
     )
     : {};
+
 
 /**
  * Get names of inclusions from filter
