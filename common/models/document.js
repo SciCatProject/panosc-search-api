@@ -12,6 +12,7 @@ const responseMapper = require("../response-mapper");
 const utils = require("../utils");
 
 module.exports = function (Document) {
+
   /**
    * Find all instances of the model matched by filter from the data source.
    * @param {object} filter Filter defining fields, where, include, order, offset, and limit - must be a JSON-encoded string ({"where":{"something":"value"}}). See https://loopback.io/doc/en/lb3/Querying-data.html#using-stringified-json-in-rest-queries for more details.
@@ -34,6 +35,9 @@ module.exports = function (Document) {
       }
     }
 
+    // checks if we have hard filter on dataset's technology
+    filter = await filterMapper.expandTechniquesInFilter(filter);
+
     const scicatFilter = filterMapper.document(filter);
     const publishedData = await scicatPublishedDataService.find(scicatFilter);
     // perform scoring only if is enabled
@@ -53,7 +57,16 @@ module.exports = function (Document) {
       if (query) {
         scoredDocuments.sort(utils.compareDocuments);
       }
-      return (limit > 0 ? scoredDocuments.slice(0, limit) : scoredDocuments);
+      // limit is applied in Document.afterRemote("find"...
+      // check below
+      //return (limit > 0 ? scoredDocuments.slice(0, limit) : scoredDocuments);
+
+      // reinsert the limit to  be used in the afterRemote function
+      if (limit > 0) {
+        filter.limit = limit;
+      }
+
+      return scoredDocuments;
     }
     else {
       // no scoring, returns results as they are
@@ -108,6 +121,11 @@ module.exports = function (Document) {
           ctx.result = utils.filterOnPrimary(ctx.result, primary);
         }
       });
+    }
+
+    // apply limit
+    if (filter.limit) {
+      ctx.result = ctx.result.splice(0, filter.limit);
     }
 
     next();

@@ -22,13 +22,25 @@ class Panet {
     console.log(">>> Panet.panet: panet requested");
     console.log(" - where filter : ", techniqueLoopbackWhere);
 
-    const res = await superagent
-      .get(this.panetUrl)
-      .query({ where: JSON.stringify(techniqueLoopbackWhere) });
+    // const res = await superagent
+    //   .get(this.panetUrl)
+    //   .query({ where : JSON.stringify(techniqueLoopbackWhere) });
 
-    const newTechniqueLoopbackWhere = JSON.parse(res.text);
-    console.log(" - where filter : ", newTechniqueLoopbackWhere);
-    return newTechniqueLoopbackWhere;
+    // const newTechniqueLoopbackWhere = JSON.parse(res.text);
+    // console.log(" - where filter : ", newTechniqueLoopbackWhere);
+    // return newTechniqueLoopbackWhere;
+
+    return superagent
+      .get(this.panetUrl)
+      .query({ where : JSON.stringify(techniqueLoopbackWhere) }).then( res => {
+        const newTechniqueLoopbackWhere = JSON.parse(res.text);
+        console.log(" + where filter : ", newTechniqueLoopbackWhere);
+        return newTechniqueLoopbackWhere;
+      }).catch(e=> {
+        console.log("fail", e);
+      });
+
+
   }
 
 }
