@@ -15,7 +15,7 @@
     "start": "node .",
     "test": "mocha --timeout=30000 --exit",
     "posttest": "eslint .",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "repository": {
