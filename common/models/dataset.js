@@ -6,6 +6,7 @@ const scicatDatasetService = new ScicatService.Dataset();
 const PSSService = require("../pss-service");
 const pssScoreService = new PSSService.Score();
 const pssScoreEnabled = process.env.PSS_ENABLE || false;
+const returnZeroScore = process.env.RETURN_ZERO_SCORE || false;
 
 const filterMapper = require("../filter-mapper");
 const responseMapper = require("../response-mapper");
