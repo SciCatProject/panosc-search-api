@@ -8,14 +8,14 @@
   ],
   "main": "server/server.js",
   "engines": {
-    "node": ">=8"
+    "node": ">=16"
   },
   "scripts": {
     "lint": "eslint --fix .",
     "start": "node .",
     "test": "mocha --timeout=30000 --exit",
     "posttest": "eslint .",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "repository": {
@@ -24,6 +24,7 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@snyk/protect": "^1.942.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "helmet": "^3.23.3",
@@ -32,7 +33,6 @@
     "loopback-component-explorer": "^6.5.1",
     "mathjs": "^7.6.0",
     "serve-favicon": "^2.5.0",
-    "snyk": "^1.913.0",
     "strong-error-handler": "^3.5.0",
     "superagent": "^5.3.1"
   },
