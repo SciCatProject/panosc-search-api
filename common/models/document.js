@@ -6,6 +6,7 @@ const scicatPublishedDataService = new ScicatService.PublishedData();
 const PSSService = require("../pss-service");
 const pssScoreService = new PSSService.Score();
 const pssScoreEnabled = process.env.PSS_ENABLE || false;
+const returnZeroScore = process.env.RETURN_ZERO_SCORE || false;
 
 const filterMapper = require("../filter-mapper");
 const responseMapper = require("../response-mapper");
@@ -40,6 +41,7 @@ module.exports = function (Document) {
 
     const scicatFilter = filterMapper.document(filter);
     const publishedData = await scicatPublishedDataService.find(scicatFilter);
+    console.log(publishedData.length + " documents found");
     // perform scoring only if is enabled
     if (pssScoreEnabled) {
       // extract the ids of the dataset returned by SciCat
@@ -48,6 +50,7 @@ module.exports = function (Document) {
         query
           ? await pssScoreService.score(query, documentsIds, "documents")
           : {});
+      console.log(Object.keys(scores).length + " documents scored");
 
       var scoredDocuments = await Promise.all(
         publishedData.map(
@@ -55,6 +58,12 @@ module.exports = function (Document) {
         ),
       );
       if (query) {
+        // filters out zero score documents if needed
+        if (!returnZeroScore) {
+          scoredDocuments = scoredDocuments.filter(v => (v.score > 0));
+          console.log(scoredDocuments.length + " non zero score documents");
+        }
+        // sort results by score
         scoredDocuments.sort(utils.compareDocuments);
       }
       // limit is applied in Document.afterRemote("find"...

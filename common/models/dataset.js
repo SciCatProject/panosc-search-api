@@ -36,6 +36,8 @@ module.exports = function (Dataset) {
 
     const scicatFilter = await filterMapper.dataset(filter);
     const datasets = await scicatDatasetService.find(scicatFilter);
+    console.log(datasets.length + " datasets found");
+
     // perform scoring only if it is enabled
     if (pssScoreEnabled) {
       // extract the ids of the dataset returned by SciCat
@@ -44,12 +46,18 @@ module.exports = function (Dataset) {
         query
           ? await pssScoreService.score(query, datasetsIds, "datasets")
           : {});
+      console.log(Object.keys(scores).length + " datasets scored");
       var scoredDatasets = await Promise.all(
         datasets.map(
           async (dataset) => await responseMapper.dataset(dataset, filter, scores),
         )
       );
       if (query) {
+        // filters out zero score documents if needed
+        if (!returnZeroScore) {
+          scoredDatasets = scoredDatasets.filter(v => (v.score > 0));
+          console.log(scoredDatasets.length + " non zero score datasets");
+        }
         scoredDatasets.sort(utils.compareDatasets);
       }
       return (limit > 0 ? scoredDatasets.slice(0, limit) : scoredDatasets);
