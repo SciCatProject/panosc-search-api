@@ -39,9 +39,10 @@ gitTag=$1
 # - master,
 # - develop
 
-
+# local container image
+localContainerImage="scicatproject/panosc-search-api:current"
 # github container repositories
-containerRepo="ghcr.io/SciCatProject/panosc-search-api"
+releaseContainerRepo="ghcr.io/scicatproject/panosc-search-api"
 
 # check if the user provided a tag or not
 if [ "-${gitTag}-" == "--" ]; then
@@ -55,31 +56,44 @@ fi
 
 
 # docker image tag
-containerTag="${gitTag}"
-containerImage="${scpRepo}:${dockerTag}"
+releaseContainerTag="${gitTag}"
+releaseContainerImage="${releaseContainerRepo}:${releaseContainerTag}"
+stableContainerImage="${releaseContainerRepo}:stable"
 
 #
 # gives some feedback to the user
-echo "Account          : ${account}"
-echo "Git commit tag   : ${gitTag}"
-echo "Container tag    : ${containerTag}"
-echo "Container image  : ${containerImage}"
-echo ""
+echo "Account                  : ${account}"
+echo "Git commit tag           : ${gitTag}"
+echo "Local Container image    : ${localContainerImage}"
+echo "Release Container tag    : ${releaseContainerTag}"
+echo "Release Container image  : ${releaseContainerImage}"
+echo "Stable Container image   : ${stableContainerImage}"
 
 #
 # create docker image
 # if it is already present, remove old image
-if [[ "$(docker images -q ${containerImage} 2> /dev/null)" != "" ]]; then
+if [[ "$(docker images -q ${localContainerImage} 2> /dev/null)" != "" ]]; then
     echo "Image already present. Removing it and recreating it"
-    docker rmi ${containerImage}
+    docker rmi ${localContainerImage}
     echo ""
 fi
-echo "Creating image"
-docker build -t ${containerImage} -f ./Dockerfile ./search-api
+echo "Creating image ${localContainerImage}"
+docker build -t ${localContainerImage} -f ./Dockerfile .
 echo ""
 
+echo "Tagging image for release ${releaseContainerImage}"
+docker tag ${localContainerImage} ${releaseContainerImage}
+
 # push image on docker hub repository
-docker push ${containerImage}
+echo "Pushing release image"
+docker push ${releaseContainerImage}
+
+echo "Tagging image for stable ${stableContainerImage}"
+docker tag ${localContainerImage} ${stableContainerImage}
+
+echo "Pushing stable image"
+docker push ${stableContainerImage}
+
 echo ""
 echo "Done"
 echo ""
