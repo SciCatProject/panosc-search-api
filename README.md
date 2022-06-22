@@ -73,3 +73,25 @@ In order to generate a new release, please follow the new few steps
    ```bash
    docker-image-release.sh <release-tag>
    ```
+
+## Deploy docker image
+
+If you would like to deploy the docker image containing the PaNOSC Search API SciCat implementation,
+please refer to the related container repository accessible on github at the following URL:
+
+  - https://github.com/SciCatProject/panosc-search-api/pkgs/container/panosc-search-api
+
+To install the latest stable releas of the PaNOSC Search API (SciCat implementation), 
+you may run the following command in a terminal:
+```bash
+   docker pull ghcr.io/scicatproject/panosc-search-api:stable
+```
+
+If you want to deploy a specific version, replace _stable_ with the version tag. 
+If you weant to install verion 1.1.2, the command should be:
+```bash
+   docker pull ghcr.io/scicatproject/panosc-search-api:v1.1.2
+```
+
+You can also use the full image name in a docker compose file.
+
