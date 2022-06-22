@@ -23,7 +23,9 @@
    export FACILITY=<YOUR_FACILITY>                      # e.g. ESS
    export PSS_BASE_URL=<PANOSC_SEARCH_SCORING_API_URL>  # e.g. http://scicat08.esss.lu.se:32222
    export PSS_ENABLE=<1 or 0>                           # e.g. 1 if you have a PSS running in your facility or 0 if you do not
+   export RETURN_ZERO_CODE=<1 or 0>                     # e.g. 1 if you would like to retrieve items that have a score of zero when scoring is enabled
    ```
+
 5. `npm start`
 
 ## Official documentation
@@ -39,11 +41,13 @@ IT can be found [here](https://github.com/panosc-eu/panosc-federated-search-serv
 
 If you are interested in testing the scoring capabilities and document relevancy, here is a quick how-to
 
-1. make sure that the PSS scoring is enabled. At ESS, the relevant envirnmental variables are set as following:
+1. make sure that the PSS scoring is enabled.
+   At ESS, the relevant environmental variables are set as following:
    ```bash
    export PSS_BASE_URL="http://scicat08.esss.lu.se:32222"
    export PSS_ENABLE=1
    ```
+   Make sure to point to your own PaNOSC Scoring Service instance. The ESS one is not publicly accessible
 
 2. access the explorer interface at http://localhost:3000/explorer
 
@@ -56,3 +60,16 @@ If you are interested in testing the scoring capabilities and document relevancy
 
    They are equivalent.
 
+## Generate a new release
+
+In order to generate a new release, please follow the new few steps
+1. Make sure that the code is properly tagged with the correct version
+2. Make sure that your account on GitHub has upload permissions for packages
+3. Login on GitHub container registry:
+   ```bash
+   docker login ghcr.io --username <your-github--username>
+   ```
+4. Run the release script:
+   ```bash
+   docker-image-release.sh <release-tag>
+   ```
