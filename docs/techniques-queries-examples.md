@@ -4,9 +4,9 @@ This document illustrate how the techniques in the PaNOSC datasets are queried w
 To run this examples, you need to run a SciCatLive version on your machie, which includes the PaNOSC Search Api.
 The results are the ones that you would get when running SciCatLive as is with its example datasets.
 
-## Datasets	
+## Datasets
 
-In order to provide meaningful examples, we need to define few datasets and the related set of techniques which are tagged with.  
+In order to provide meaningful examples, we need to define few datasets and the related set of techniques which are tagged with.
 The datasets are defined in the test dataset provided with the vanilla installation of SciCatLive, and are listed below for coneniency. Each dataset is listed with the technique that is tagged with and the relativer technique pid.
 
 
@@ -73,16 +73,16 @@ A user is looking for datasets which are tagged with the term *x-ray emission sp
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"name":"x-ray emission spectroscopy"}}}]}
 ```
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -136,12 +136,12 @@ Interpreted query:
 *PID.SAMPLE.PREFIX/soleil_ds1 , PID.SAMPLE.PREFIX/soleil_ds2 , PID.SAMPLE.PREFIX/ukri_ds1 , PID.SAMPLE.PREFIX/ukri_ds2 , PID.SAMPLE.PREFIX/ukri_ds3 , PID.SAMPLE.PREFIX/ukri_ds4 , PID.SAMPLE.PREFIX/ukri_ds5 , PID.SAMPLE.PREFIX/ukri_ds6*
 
 \
-Query details: 
+Query details:
 - techniques highlighted in **bold** are the techniques that match the query submitted
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/dls_ds1 | anomalous solution x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01275 |
@@ -168,7 +168,7 @@ Query details:
 ### Query 2
 
 #### Use case:
-A user is searching for datasets tagged with technique *small angle scattering* or any of its descendants 
+A user is searching for datasets tagged with technique *small angle scattering* or any of its descendants
 
 #### User query:
 ```json
@@ -187,16 +187,16 @@ A user is searching for datasets tagged with technique *small angle scattering* 
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"name":"small angle scattering"}}}]}
 ```
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22small%20angle%20scattering%22%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22small%20angle%20scattering%22%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22small%20angle%20scattering%22%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%22small%20angle%20scattering%22%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -271,12 +271,12 @@ Interpreted query:
 *PID.SAMPLE.PREFIX/dls_ds1 , PID.SAMPLE.PREFIX/dls_ds2 , PID.SAMPLE.PREFIX/hzdr_ds1 , PID.SAMPLE.PREFIX/maxiv_ds2 , PID.SAMPLE.PREFIX/ukri_ds5 , PID.SAMPLE.PREFIX/ukri_ds6*
 
 \
-Query details: 
+Query details:
 - techniques highlighted in **bold** are the techniques that match the query submitted
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/dls_ds1 | **anomalous solution x-ray scattering**	| **http://purl.org/pan-science/PaNET/PaNET01275** |
@@ -324,17 +324,17 @@ A user is looking for datasets that are not tagged with the term *X-ray emission
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"name":{"neq":"x-ray emission spectroscopy"}}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22x-ray%20emission%20spectroscopy%22%7D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -375,13 +375,13 @@ Interpreted query:
 *PID.SAMPLE.PREFIX/desy_ds1 , PID.SAMPLE.PREFIX/desy_ds2 , PID.SAMPLE.PREFIX/desy_ds3 , PID.SAMPLE.PREFIX/dls_ds1 , PID.SAMPLE.PREFIX/dls_ds2 , PID.SAMPLE.PREFIX/hzdr_ds1 , PID.SAMPLE.PREFIX/maxiv_ds1 , PID.SAMPLE.PREFIX/maxiv_ds2 , PID.SAMPLE.PREFIX/psi_ds1 , PID.SAMPLE.PREFIX/psi_ds2 , PID.SAMPLE.PREFIX/psi_ds3*
 
 \
-Query details: 
+Query details:
 - techniques highlighted with ~~strikethrough~~ are the ones specified in the query which should not be present for the dataset to be selected
 
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- | Y | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ | Y | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/dls_ds1 | anomalous solution x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01275 |
@@ -429,17 +429,17 @@ A user is looking for datasets that are not tagged with the term *small angle sc
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"name":{"neq":"small angle scattering"}}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22small%20angle%20scattering%22%7D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22small%20angle%20scattering%22%7D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22small%20angle%20scattering%22%7D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22name%22%3A%7B%22neq%22%3A%22small%20angle%20scattering%22%7D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -501,13 +501,13 @@ Interpreted query:
 *PID.SAMPLE.PREFIX/desy_ds1 , PID.SAMPLE.PREFIX/desy_ds2 , PID.SAMPLE.PREFIX/desy_ds3 , PID.SAMPLE.PREFIX/maxiv_ds1 , PID.SAMPLE.PREFIX/psi_ds1 , PID.SAMPLE.PREFIX/psi_ds2 , PID.SAMPLE.PREFIX/psi_ds3 , PID.SAMPLE.PREFIX/soleil_ds1 , PID.SAMPLE.PREFIX/soleil_ds2 , PID.SAMPLE.PREFIX/ukri_ds1 , PID.SAMPLE.PREFIX/ukri_ds2 , PID.SAMPLE.PREFIX/ukri_ds3 , PID.SAMPLE.PREFIX/ukri_ds4*
 
 \
-Query details: 
+Query details:
 - techniques highlighted with ~~strikethrough~~ are the ones specified in the query which should not be present for the dataset to be selected
 
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- | Y | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ | Y | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/dls_ds1 | ~~anomalous solution x-ray scattering~~	| ~~http://purl.org/pan-science/PaNET/PaNET01275~~ |
@@ -535,7 +535,7 @@ Query details:
 ### Query 5
 
 #### Use case:
-A user is searching for datasets tagged with both techniques *small angle scattering* and *magnetism technique* or any of their descendants 
+A user is searching for datasets tagged with both techniques *small angle scattering* and *magnetism technique* or any of their descendants
 
 #### User query:
 ```json
@@ -560,17 +560,17 @@ A user is searching for datasets tagged with both techniques *small angle scatte
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"and":[{"name":"small angle scattering"},{"name": "magnetism technique"}]}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -711,15 +711,15 @@ Interpreted query:
 No dataset is returned.
 
 \
-Query details: 
-- techniques highlighted with **bold** are the ones matching the first operand of the and in the query, 
-- techniques highlighted with *italic* are the ones matching the second operand of the and in the query, 
+Query details:
+- techniques highlighted with **bold** are the ones matching the first operand of the and in the query,
+- techniques highlighted with *italic* are the ones matching the second operand of the and in the query,
 - there is no datasets where both techniques are higlighted
 
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/dls_ds1 | **anomalous solution x-ray scattering**	| **http://purl.org/pan-science/PaNET/PaNET01275** |
@@ -747,7 +747,7 @@ Query details:
 ### Query 6
 
 #### Use case:
-A user is searching for datasets tagged with both techniques *small angle scattering* or *magnetism technique* or any of their descendants 
+A user is searching for datasets tagged with both techniques *small angle scattering* or *magnetism technique* or any of their descendants
 
 #### User query:
 ```json
@@ -772,17 +772,17 @@ A user is searching for datasets tagged with both techniques *small angle scatte
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"or":[{"name":"small angle scattering"},{"name": "magnetism technique"}]}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22magnetism%20technique%22%7D%5D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -924,14 +924,14 @@ Interpreted query:
 
 
 \
-Query details: 
-- techniques highlighted with **bold** are the ones matching the first operand of the and in the query, 
-- techniques highlighted with *italic* are the ones matching the second operand of the and in the query, 
+Query details:
+- techniques highlighted with **bold** are the ones matching the first operand of the and in the query,
+- techniques highlighted with *italic* are the ones matching the second operand of the and in the query,
 
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/dls_ds1 | **anomalous solution x-ray scattering**	| **http://purl.org/pan-science/PaNET/PaNET01275** |
@@ -959,7 +959,7 @@ Query details:
 ### Query 7
 
 #### Use case:
-A user is searching for datasets tagged with both techniques *small angle scattering* and *x-ray probe* or any of their descendants 
+A user is searching for datasets tagged with both techniques *small angle scattering* and *x-ray probe* or any of their descendants
 
 #### User query:
 ```json
@@ -984,17 +984,17 @@ A user is searching for datasets tagged with both techniques *small angle scatte
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"and":[{"name":"small angle scattering"},{"name": "x-ray probe"}]}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -1212,25 +1212,25 @@ Interpreted query:
 #### Dataset returned
  | Query 7 datasets  |
  | ---------------------------- |
- | PID.SAMPLE.PREFIX/dls_ds1 | 
- | PID.SAMPLE.PREFIX/dls_ds2 | 
- | PID.SAMPLE.PREFIX/hzdr_ds1 | 
- | PID.SAMPLE.PREFIX/maxiv_ds2 | 
- | PID.SAMPLE.PREFIX/ukri_ds5 | 
+ | PID.SAMPLE.PREFIX/dls_ds1 |
+ | PID.SAMPLE.PREFIX/dls_ds2 |
+ | PID.SAMPLE.PREFIX/hzdr_ds1 |
+ | PID.SAMPLE.PREFIX/maxiv_ds2 |
+ | PID.SAMPLE.PREFIX/ukri_ds5 |
  | PID.SAMPLE.PREFIX/ukri_ds6 |
 
 
 \
-Query details: 
-- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query, 
+Query details:
+- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query,
 - techniques highlighted with *italic* are the ones matching the second operand of the logical and in the query,
 - techniques highlighted with ***bold and italic*** are the ones matching both the first and second operand of the logical and in the query,
-- only datasets tagged with techniques that match the 2 and operands are selected 
+- only datasets tagged with techniques that match the 2 and operands are selected
 
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | *resonant inelastic x-ray scattering* | *http://purl.org/pan-science/PaNET/PaNET01183* | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | *resonant inelastic x-ray scattering* | *http://purl.org/pan-science/PaNET/PaNET01183* |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | *resonant inelastic x-ray scattering*	| *http://purl.org/pan-science/PaNET/PaNET01183* |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | *resonant inelastic x-ray scattering*	| *http://purl.org/pan-science/PaNET/PaNET01183* |
  | Y | PID.SAMPLE.PREFIX/dls_ds1 | ***anomalous solution x-ray scattering***	| ***http://purl.org/pan-science/PaNET/PaNET01275*** |
@@ -1259,7 +1259,7 @@ Query details:
 ### Query 8
 
 #### Use case:
-A user is searching for datasets tagged with both techniques *small angle scattering* or *x-ray probe* or any of their descendants 
+A user is searching for datasets tagged with both techniques *small angle scattering* or *x-ray probe* or any of their descendants
 
 #### User query:
 ```json
@@ -1284,17 +1284,17 @@ A user is searching for datasets tagged with both techniques *small angle scatte
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"or":[{"name":"small angle scattering"},{"name": "x-ray probe"}]}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22or%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%22x-ray%20probe%22%7D%5D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -1513,14 +1513,14 @@ Interpreted query:
 *PID.SAMPLE.PREFIX/desy_ds1 , PID.SAMPLE.PREFIX/desy_ds2 , PID.SAMPLE.PREFIX/desy_ds3 , PID.SAMPLE.PREFIX/dls_ds1 , PID.SAMPLE.PREFIX/dls_ds2 , PID.SAMPLE.PREFIX/hzdr_ds1 , PID.SAMPLE.PREFIX/maxiv_ds1 , PID.SAMPLE.PREFIX/maxiv_ds2 , PID.SAMPLE.PREFIX/psi_ds1 , PID.SAMPLE.PREFIX/psi_ds2 , PID.SAMPLE.PREFIX/psi_ds3 , PID.SAMPLE.PREFIX/soleil_ds1 , PID.SAMPLE.PREFIX/soleil_ds2 , PID.SAMPLE.PREFIX/ukri_ds1 , PID.SAMPLE.PREFIX/ukri_ds2 , PID.SAMPLE.PREFIX/ukri_ds3 , PID.SAMPLE.PREFIX/ukri_ds4 , PID.SAMPLE.PREFIX/ukri_ds5 , PID.SAMPLE.PREFIX/ukri_ds6*
 
 \
-Query details: 
-- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query, 
+Query details:
+- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query,
 - techniques highlighted with *italic* are the ones matching the second operand of the logical and in the query,
 - techniques highlighted with ***bold and italic*** are the ones matching both the first and second operand of the logical and in the query,
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- | Y | PID.SAMPLE.PREFIX/desy_ds1 | *resonant inelastic x-ray scattering* | *http://purl.org/pan-science/PaNET/PaNET01183* | 
+ | Y | PID.SAMPLE.PREFIX/desy_ds1 | *resonant inelastic x-ray scattering* | *http://purl.org/pan-science/PaNET/PaNET01183* |
  | Y | PID.SAMPLE.PREFIX/desy_ds2 | *resonant inelastic x-ray scattering*	| *http://purl.org/pan-science/PaNET/PaNET01183* |
  | Y | PID.SAMPLE.PREFIX/desy_ds3 | *resonant inelastic x-ray scattering*	| *http://purl.org/pan-science/PaNET/PaNET01183* |
  | Y | PID.SAMPLE.PREFIX/dls_ds1 | ***anomalous solution x-ray scattering***	| ***http://purl.org/pan-science/PaNET/PaNET01275*** |
@@ -1549,7 +1549,7 @@ Query details:
 ### Query 9
 
 #### Use case:
-A user is looking for datasets tagged with technique *small angle scattering* or any of its descendants but not with *x-ray probe* or any of its descendants 
+A user is looking for datasets tagged with technique *small angle scattering* or any of its descendants but not with *x-ray probe* or any of its descendants
 
 #### User query:
 ```json
@@ -1576,17 +1576,17 @@ A user is looking for datasets tagged with technique *small angle scattering* or
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"and":[{"name":"small angle scattering"},{"name": {"neq" : "x-ray probe"}}]}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22x-ray%20probe%22%7D%7D%5D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22x-ray%20probe%22%7D%7D%5D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22x-ray%20probe%22%7D%7D%5D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22x-ray%20probe%22%7D%7D%5D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -1807,14 +1807,14 @@ Interpreted query:
 No dataset is returnec
 
 \
-Query details: 
-- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query, 
+Query details:
+- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query,
 - techniques highlighted with ~~strikethrough~~ are the ones matching the second operand of the logical and in the query. They need not to be present in order for the dataset to be selected
 - techniques highlighted with ~~**bold and strikethrought**~~ are the ones matching both the first and second operand of the logical and in the query,
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | ~~resonant inelastic x-ray scattering~~ | ~~http://purl.org/pan-science/PaNET/PaNET01183~~ | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | ~~resonant inelastic x-ray scattering~~ | ~~http://purl.org/pan-science/PaNET/PaNET01183~~ |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | ~~resonant inelastic x-ray scattering~~	| ~~http://purl.org/pan-science/PaNET/PaNET01183~~ |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | ~~resonant inelastic x-ray scattering~~	| ~~http://purl.org/pan-science/PaNET/PaNET01183~~ |
  |   | PID.SAMPLE.PREFIX/dls_ds1 | ~~**anomalous solution x-ray scattering**~~	| ~~**http://purl.org/pan-science/PaNET/PaNET01275**~~ |
@@ -1842,7 +1842,7 @@ Query details:
 ### Query 9
 
 #### Use case:
-A user is looking for datasets tagged with technique *small angle scattering* or any of its descendants but not with *magnetism technique* or any of its descendants 
+A user is looking for datasets tagged with technique *small angle scattering* or any of its descendants but not with *magnetism technique* or any of its descendants
 
 #### User query:
 ```json
@@ -1869,17 +1869,17 @@ A user is looking for datasets tagged with technique *small angle scattering* or
 }
 ```
 
-Compact format:  
+Compact format:
 ```json
 {"include":[{"relation":"techniques","scope":{"where":{"and":[{"name":"small angle scattering"},{"name": {"neq" : "magnetism technique"}}]}}}]}
 ```
 
-Request URL:  
-`http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22magnetism%20technique%22%7D%7D%5D%7D%7D%7D%5D%7D`
+Request URL:
+`http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22magnetism%20technique%22%7D%7D%5D%7D%7D%7D%5D%7D`
 
 Curl commnad
 ```bash
-curl -X GET --header 'Accept: application/json' 'http://localhost/panosc-api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22magnetism%20technique%22%7D%7D%5D%7D%7D%7D%5D%7D'
+curl -X GET --header 'Accept: application/json' 'http://localhost/api/Datasets?filter=%7B%22include%22%3A%5B%7B%22relation%22%3A%22techniques%22%2C%22scope%22%3A%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22name%22%3A%22small%20angle%20scattering%22%7D%2C%7B%22name%22%3A%20%7B%22neq%22%20%3A%20%22magnetism%20technique%22%7D%7D%5D%7D%7D%7D%5D%7D'
 ```
 
 Equivalent user query:
@@ -2023,14 +2023,14 @@ Interpreted query:
 
 
 \
-Query details: 
-- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query, 
+Query details:
+- techniques highlighted with **bold** are the ones matching the first operand of the logical and in the query,
 - techniques highlighted with ~~strikethrough~~ are the ones matching the second operand of the logical and in the query. They need not to be present in order for the dataset to be selected
 - techniques highlighted with ~~**bold and strikethrought**~~ are the ones matching both the first and second operand of the logical and in the query,
- 
+
  | Selected | Dataset id | Technique Name | Technique PID |
  | :-: | - | - | - |
- |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 | 
+ |   | PID.SAMPLE.PREFIX/desy_ds1 | resonant inelastic x-ray scattering | http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds2 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  |   | PID.SAMPLE.PREFIX/desy_ds3 | resonant inelastic x-ray scattering	| http://purl.org/pan-science/PaNET/PaNET01183 |
  | Y | PID.SAMPLE.PREFIX/dls_ds1 | **anomalous solution x-ray scattering**	| **http://purl.org/pan-science/PaNET/PaNET01275** |

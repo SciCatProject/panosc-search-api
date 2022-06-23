@@ -19,7 +19,7 @@ afterEach((done) => {
 });
 
 describe("Instrument", () => {
-  const requestUrl = "/panosc-api/Instruments";
+  const requestUrl = "/api/Instruments";
   describe("GET /instruments", () => {
     context("without filter", () => {
       it("should return an array of instruments", (done) => {
@@ -84,7 +84,7 @@ describe("Instrument", () => {
         sandbox
           .stub(ScicatInstrumentService.prototype, "find")
           .resolves(mockStubs.instrument.find.facilityFilter);
-        if (process.env.FACILITY) { 
+        if (process.env.FACILITY) {
           sandbox.stub(process.env, "FACILITY").value("ESS");
         }
 

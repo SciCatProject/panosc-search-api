@@ -20,7 +20,7 @@ afterEach((done) => {
 });
 
 describe("Dataset", () => {
-  const requestUrl = "/panosc-api/Datasets";
+  const requestUrl = "/api/Datasets";
   describe("GET /datasets", () => {
     context("without filter", () => {
       it("should return en array of datasets", (done) => {

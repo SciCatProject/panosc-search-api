@@ -22,7 +22,7 @@ afterEach((done) => {
 });
 
 describe("Document", () => {
-  const requestUrl = "/panosc-api/Documents";
+  const requestUrl = "/api/Documents";
   describe("GET /documents", () => {
     context("without filter", () => {
       it("should return an array of documents", (done) => {
