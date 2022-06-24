@@ -43,7 +43,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: scicatproject/panosc-search-api:latest
+          tags: ghcr.io/scicatproject/panosc-search-api:latest
 
   gitlab:
     name: Deploy
