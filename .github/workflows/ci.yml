@@ -42,7 +42,7 @@ jobs:
             latest=false
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=stable,enable={{github.event_name == 'tag'}}
+            type=raw,value=stable,enable=${{github.event_name == 'tag'}}
             type=ref,event=tag
 
       - name: Set up QEMU
