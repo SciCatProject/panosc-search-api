@@ -108,7 +108,8 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
     title: scicatPublishedData.title,
     summary: scicatPublishedData.abstract,
     doi: scicatPublishedData.doi,
-    score: 0.0
+    score: 0.0,
+    releaseDate: scicatPublishedData.publicationYear
   };
 
   const inclusions = utils.getInclusions(filter);
@@ -234,7 +235,8 @@ exports.members = (scicatPublishedData, filter) => {
         person: { fullName: author },
       }))
       : [];
-  return creators.concat(authors);
+
+  return [...new Map(creators.concat(authors).map((item) => [item["person"]["fullName"], item])).values()];
 };
 
 /**
