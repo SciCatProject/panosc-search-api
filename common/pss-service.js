@@ -33,8 +33,9 @@ exports.Score = class {
         itemIds: itemIds,
         group: group,
         limit: limit
+      }).catch(() => {
+        return { text: JSON.stringify({ scores: [] }) };
       });
-
     const jsonRes = JSON.parse(res.text);
 
     const scores = Object.assign({}, ...jsonRes.scores.map((i) => ({ [i.itemId]: i.score })));
