@@ -109,7 +109,7 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
     summary: scicatPublishedData.abstract,
     doi: scicatPublishedData.doi,
     score: 0.0,
-    releaseDate: scicatPublishedData.publicationYear
+    releaseDate: new Date(String(scicatPublishedData.publicationYear))
   };
 
   const inclusions = utils.getInclusions(filter);
