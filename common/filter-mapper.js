@@ -5,6 +5,8 @@ const mappings = require("./mappings");
 const utils = require("./utils");
 
 
+const panoscParameters = ["sample_temperature", "incident_wavelength"];
+
 /**
    * Expands the techniques where clause
    * @param {object} filter
@@ -234,6 +236,181 @@ exports.sample = (filter) => {
   }
 };
 
+
+/**
+ * Expand official PaNOSC parameters to test for intervals
+ * The offical parameters that are expanded are:
+ * - sample_temperature
+ * - incident_wavelength
+ *
+ * @param {string} name
+ * @param {*} value
+ * @param {string} unit
+ */
+const mapWhereFilterParameter = (name, value, unit) => {
+  let output = { "and": [] };
+
+  if (unit) {
+    if (isNaN(value)) {
+      const extractedValue = Object.values(value).pop();
+      if (Array.isArray(extractedValue)) {
+        // we have multiple values
+        const arrayValues = extractedValue.map((value) =>
+          utils.convertToSI(value, unit)
+        );
+        const formattedValueSI = Object.assign(
+          ...Object.keys(value).map((key) => ({
+            [key]: arrayValues.map((item) => item.valueSI),
+          }))
+        );
+        output.and.push({
+          [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+        });
+        const unitSI = arrayValues[0].unitSI;
+        output.and.push({
+          [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+        });
+
+        // now we check if the parameter is one of the PaNOSC ones
+        // if that's the case, we include the range option
+        if ( panoscParameters.includes(name) ) {
+          // we check the condition
+          // at the momenmt only "between" is implemented
+          if ( Object.keys(formattedValueSI).includes("between") ) {
+            // we build an or between the condition on the main parameter
+            // and the min and max version
+            output.or = [
+              { "and" : output.and }
+            ];
+            // add condition on min and max
+            const nameMin = name + "_min";
+            const nameMax = name + "_max";
+            output.or.push({
+              "and" : [
+                { "and" : [
+                  { [`scientificMetadata.${nameMin}.valueSI`]: { "lte" : Math.max(...arrayValues.map((i) => i.valueSI)) } },
+                  { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
+                ] },
+                { "and" : [
+                  { [`scientificMetadata.${nameMax}.valueSI`]: { "gte" : Math.min(...arrayValues.map((i) => i.valueSI)) } },
+                  { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
+                ] }
+              ]
+            });
+
+            // remove original and
+            delete output.and;
+          }
+        }
+      } else {
+        const { valueSI, unitSI } = utils.convertToSI(
+          extractedValue,
+          unit
+        );
+        const formattedValueSI = Object.assign(
+          ...Object.keys(value).map((key) => ({ [key]: valueSI }))
+        );
+        output.and.push({
+          [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+        });
+        output.and.push({
+          [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+        });
+
+        // now we check if the parameter is one of the PaNOSC ones
+        // if that's the case, we include the range option
+        if ( panoscParameters.includes(name) ) {
+          // we check the condition
+          // at the momenmt only "gte" and "lte" are implemented
+          if ( Object.keys(formattedValueSI).includes("lte") ) {
+            // we build an or between the condition on the main parameter
+            // and the min and max version
+            output.or = [
+              { "and" : output.and }
+            ];
+            // add condition on min and max
+            const nameMin = name + "_min";
+            output.or.push(
+              { "and" : [
+                { [`scientificMetadata.${nameMin}.valueSI`]: { "lte" : valueSI } },
+                { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
+              ] }
+            );
+
+            // remove original and
+            delete output.and;
+          }
+          else if ( Object.keys(formattedValueSI).includes("gte") ) {
+            // we build an or between the condition on the main parameter
+            // and the min and max version
+            output.or = [
+              { "and" : output.and }
+            ];
+            // add condition on min and max
+            const nameMax = name + "_max";
+            output.or.push(
+              { "and" : [
+                { [`scientificMetadata.${nameMax}.valueSI`]: { "gte" : valueSI } },
+                { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
+              ] }
+            );
+
+            // remove original and
+            delete output.and;
+          }
+        }
+
+      }
+    } else {
+      const { valueSI, unitSI } = utils.convertToSI(value, unit);
+      output.and.push({
+        [`scientificMetadata.${name}.valueSI`]: valueSI,
+      });
+      output.and.push({
+        [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+      });
+
+      // now we check if the parameter is one of the PaNOSC ones
+      // if that's the case, we include the range option
+      if ( panoscParameters.includes(name) ) {
+        // we build an or between the condition on the main parameter
+        // and the min and max version
+        output.or = [
+          { "and" : output.and }
+        ];
+        // add condition on min and max
+        const nameMin = name + "_min";
+        const nameMax = name + "_max";
+        output.or.push({
+          "and" : [
+            { "and" : [
+              { [`scientificMetadata.${nameMin}.valueSI`]: { "lte" : valueSI } },
+              { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
+            ] },
+            { "and" : [
+              { [`scientificMetadata.${nameMax}.valueSI`]: { "gte" : valueSI } },
+              { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
+            ] }
+          ]
+        });
+
+        // remove original and
+        delete output.and;
+      }
+    }
+  } else {
+    output.and.push({
+      "or": [{
+        [`scientificMetadata.${name}.value`]: value
+      },
+      {
+        [`scientificMetadata.${name}.v`]: value
+      }]
+    });
+  }
+  return output;
+};
+
 /**
  * Map PaNOSC where filter to SciCat where filter
  * @param {object} where PaNOSC loopback where filter object
@@ -351,59 +528,60 @@ const mapWhereFilter = (where, model) => {
       if (name) {
         scicatWhere.and = [];
         if (value !== null) {
-          if (unit) {
-            if (isNaN(value)) {
-              const extractedValue = Object.values(value).pop();
-              if (Array.isArray(extractedValue)) {
-                const arrayValues = extractedValue.map((value) =>
-                  utils.convertToSI(value, unit)
-                );
-                const formattedValueSI = Object.assign(
-                  ...Object.keys(value).map((key) => ({
-                    [key]: arrayValues.map((item) => item.valueSI),
-                  }))
-                );
-                const unitSI = arrayValues.pop().unitSI;
-                scicatWhere.and.push({
-                  [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-                });
-                scicatWhere.and.push({
-                  [`scientificMetadata.${name}.unitSI`]: unitSI,
-                });
-              } else {
-                const { valueSI, unitSI } = utils.convertToSI(
-                  extractedValue,
-                  unit
-                );
-                const formattedValueSI = Object.assign(
-                  ...Object.keys(value).map((key) => ({ [key]: valueSI }))
-                );
-                scicatWhere.and.push({
-                  [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-                });
-                scicatWhere.and.push({
-                  [`scientificMetadata.${name}.unitSI`]: unitSI,
-                });
-              }
-            } else {
-              const { valueSI, unitSI } = utils.convertToSI(value, unit);
-              scicatWhere.and.push({
-                [`scientificMetadata.${name}.valueSI`]: valueSI,
-              });
-              scicatWhere.and.push({
-                [`scientificMetadata.${name}.unitSI`]: unitSI,
-              });
-            }
-          } else {
-            scicatWhere.and.push({
-              "or": [{
-                [`scientificMetadata.${name}.value`]: value
-              },
-              {
-                [`scientificMetadata.${name}.v`]: value
-              }]
-            });
-          }
+          scicatWhere = mapWhereFilterParameter(name,value,unit);
+          // if (unit) {
+          //   if (isNaN(value)) {
+          //     const extractedValue = Object.values(value).pop();
+          //     if (Array.isArray(extractedValue)) {
+          //       const arrayValues = extractedValue.map((value) =>
+          //         utils.convertToSI(value, unit)
+          //       );
+          //       const formattedValueSI = Object.assign(
+          //         ...Object.keys(value).map((key) => ({
+          //           [key]: arrayValues.map((item) => item.valueSI),
+          //         }))
+          //       );
+          //       scicatWhere.and.push({
+          //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+          //       });
+          //       const unitSI = arrayValues.pop().unitSI;
+          //       scicatWhere.and.push({
+          //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+          //       });
+          //     } else {
+          //       const { valueSI, unitSI } = utils.convertToSI(
+          //         extractedValue,
+          //         unit
+          //       );
+          //       const formattedValueSI = Object.assign(
+          //         ...Object.keys(value).map((key) => ({ [key]: valueSI }))
+          //       );
+          //       scicatWhere.and.push({
+          //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+          //       });
+          //       scicatWhere.and.push({
+          //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+          //       });
+          //     }
+          //   } else {
+          //     const { valueSI, unitSI } = utils.convertToSI(value, unit);
+          //     scicatWhere.and.push({
+          //       [`scientificMetadata.${name}.valueSI`]: valueSI,
+          //     });
+          //     scicatWhere.and.push({
+          //       [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+          //     });
+          //   }
+          // } else {
+          //   scicatWhere.and.push({
+          //     "or": [{
+          //       [`scientificMetadata.${name}.value`]: value
+          //     },
+          //     {
+          //       [`scientificMetadata.${name}.v`]: value
+          //     }]
+          //   });
+          // }
         } else {
           const err = new Error();
           err.name = "FilterError";
@@ -424,61 +602,62 @@ const mapWhereFilter = (where, model) => {
       );
       const scientificMetadata = parameters.map(({ name, value, unit }) => {
         if (name) {
-          const filter = { and: [] };
+          let filter = { and: [] };
           if (value !== null) {
-            if (unit) {
-              if (isNaN(value)) {
-                const extractedValue = Object.values(value).pop();
-                if (Array.isArray(extractedValue)) {
-                  const arrayValues = extractedValue.map((value) =>
-                    utils.convertToSI(value, unit)
-                  );
-                  const formattedValueSI = Object.assign(
-                    ...Object.keys(value).map((key) => ({
-                      [key]: arrayValues.map((item) => item.valueSI),
-                    }))
-                  );
-                  const unitSI = arrayValues.pop().unitSI;
-                  filter.and.push({
-                    [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-                  });
-                  filter.and.push({
-                    [`scientificMetadata.${name}.unitSI`]: unitSI,
-                  });
-                } else {
-                  const { valueSI, unitSI } = utils.convertToSI(
-                    extractedValue,
-                    unit
-                  );
-                  const formattedValueSI = Object.assign(
-                    ...Object.keys(value).map((key) => ({ [key]: valueSI }))
-                  );
-                  filter.and.push({
-                    [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-                  });
-                  filter.and.push({
-                    [`scientificMetadata.${name}.unitSI`]: unitSI,
-                  });
-                }
-              } else {
-                const { valueSI, unitSI } = utils.convertToSI(value, unit);
-                filter.and.push({
-                  [`scientificMetadata.${name}.valueSI`]: valueSI,
-                });
-                filter.and.push({
-                  [`scientificMetadata.${name}.unitSI`]: unitSI,
-                });
-              }
-            } else {
-              filter.and.push({
-                "or": [{
-                  [`scientificMetadata.${name}.value`]: value
-                },
-                {
-                  [`scientificMetadata.${name}.v`]: value
-                }]
-              });
-            }
+            filter = mapWhereFilterParameter(name,value,unit);
+            // if (unit) {
+            //   if (isNaN(value)) {
+            //     const extractedValue = Object.values(value).pop();
+            //     if (Array.isArray(extractedValue)) {
+            //       const arrayValues = extractedValue.map((value) =>
+            //         utils.convertToSI(value, unit)
+            //       );
+            //       const formattedValueSI = Object.assign(
+            //         ...Object.keys(value).map((key) => ({
+            //           [key]: arrayValues.map((item) => item.valueSI),
+            //         }))
+            //       );
+            //       filter.and.push({
+            //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+            //       });
+            //       const unitSI = arrayValues.pop().unitSI;
+            //       filter.and.push({
+            //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+            //       });
+            //     } else {
+            //       const { valueSI, unitSI } = utils.convertToSI(
+            //         extractedValue,
+            //         unit
+            //       );
+            //       const formattedValueSI = Object.assign(
+            //         ...Object.keys(value).map((key) => ({ [key]: valueSI }))
+            //       );
+            //       filter.and.push({
+            //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
+            //       });
+            //       filter.and.push({
+            //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+            //       });
+            //     }
+            //   } else {
+            //     const { valueSI, unitSI } = utils.convertToSI(value, unit);
+            //     filter.and.push({
+            //       [`scientificMetadata.${name}.valueSI`]: valueSI,
+            //     });
+            //     filter.and.push({
+            //       [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
+            //     });
+            //   }
+            // } else {
+            //   filter.and.push({
+            //     "or": [{
+            //       [`scientificMetadata.${name}.value`]: value
+            //     },
+            //     {
+            //       [`scientificMetadata.${name}.v`]: value
+            //     }]
+            //   });
+            // }
             return filter;
           } else {
             const err = new Error();

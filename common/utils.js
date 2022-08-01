@@ -136,6 +136,19 @@ exports.filterOnSecondary = (result, primary, secondary) =>
   );
 
 /**
+ *
+ * @param {string} unit unit to be checked
+ * @returns the same unit or the construct to check for the unit full name or abbreviation
+ */
+exports.includeUnitFullName = (unit) => {
+  let output = unit;
+  if (unit == "K") {
+    output = { "inq" : ["K","kelvin"] };
+  }
+  return output;
+};
+
+/**
  * Convert a quantity to SI units
  * @param {number} value Value to be converted
  * @param {string} unit Unit to be converted
