@@ -3,6 +3,10 @@
 const math = require("mathjs");
 //const panetOntology = require("./panet-service").PanetOntology;
 
+const unitFullNames = {
+  "K" : ["K", "kelvin"],
+  "m" : ["m", "meter"]
+};
 
 /**
  * Expands the techniques where clause
@@ -142,8 +146,8 @@ exports.filterOnSecondary = (result, primary, secondary) =>
  */
 exports.includeUnitFullName = (unit) => {
   let output = unit;
-  if (unit == "K") {
-    output = { "inq" : ["K","kelvin"] };
+  if ( Object.keys(unitFullNames).includes(unit)) {
+    output = { "inq" : unitFullNames[unit] };
   }
   return output;
 };

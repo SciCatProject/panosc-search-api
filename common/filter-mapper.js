@@ -529,59 +529,6 @@ const mapWhereFilter = (where, model) => {
         scicatWhere.and = [];
         if (value !== null) {
           scicatWhere = mapWhereFilterParameter(name,value,unit);
-          // if (unit) {
-          //   if (isNaN(value)) {
-          //     const extractedValue = Object.values(value).pop();
-          //     if (Array.isArray(extractedValue)) {
-          //       const arrayValues = extractedValue.map((value) =>
-          //         utils.convertToSI(value, unit)
-          //       );
-          //       const formattedValueSI = Object.assign(
-          //         ...Object.keys(value).map((key) => ({
-          //           [key]: arrayValues.map((item) => item.valueSI),
-          //         }))
-          //       );
-          //       scicatWhere.and.push({
-          //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-          //       });
-          //       const unitSI = arrayValues.pop().unitSI;
-          //       scicatWhere.and.push({
-          //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-          //       });
-          //     } else {
-          //       const { valueSI, unitSI } = utils.convertToSI(
-          //         extractedValue,
-          //         unit
-          //       );
-          //       const formattedValueSI = Object.assign(
-          //         ...Object.keys(value).map((key) => ({ [key]: valueSI }))
-          //       );
-          //       scicatWhere.and.push({
-          //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-          //       });
-          //       scicatWhere.and.push({
-          //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-          //       });
-          //     }
-          //   } else {
-          //     const { valueSI, unitSI } = utils.convertToSI(value, unit);
-          //     scicatWhere.and.push({
-          //       [`scientificMetadata.${name}.valueSI`]: valueSI,
-          //     });
-          //     scicatWhere.and.push({
-          //       [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-          //     });
-          //   }
-          // } else {
-          //   scicatWhere.and.push({
-          //     "or": [{
-          //       [`scientificMetadata.${name}.value`]: value
-          //     },
-          //     {
-          //       [`scientificMetadata.${name}.v`]: value
-          //     }]
-          //   });
-          // }
         } else {
           const err = new Error();
           err.name = "FilterError";
@@ -602,63 +549,8 @@ const mapWhereFilter = (where, model) => {
       );
       const scientificMetadata = parameters.map(({ name, value, unit }) => {
         if (name) {
-          let filter = { and: [] };
           if (value !== null) {
-            filter = mapWhereFilterParameter(name,value,unit);
-            // if (unit) {
-            //   if (isNaN(value)) {
-            //     const extractedValue = Object.values(value).pop();
-            //     if (Array.isArray(extractedValue)) {
-            //       const arrayValues = extractedValue.map((value) =>
-            //         utils.convertToSI(value, unit)
-            //       );
-            //       const formattedValueSI = Object.assign(
-            //         ...Object.keys(value).map((key) => ({
-            //           [key]: arrayValues.map((item) => item.valueSI),
-            //         }))
-            //       );
-            //       filter.and.push({
-            //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-            //       });
-            //       const unitSI = arrayValues.pop().unitSI;
-            //       filter.and.push({
-            //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-            //       });
-            //     } else {
-            //       const { valueSI, unitSI } = utils.convertToSI(
-            //         extractedValue,
-            //         unit
-            //       );
-            //       const formattedValueSI = Object.assign(
-            //         ...Object.keys(value).map((key) => ({ [key]: valueSI }))
-            //       );
-            //       filter.and.push({
-            //         [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
-            //       });
-            //       filter.and.push({
-            //         [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-            //       });
-            //     }
-            //   } else {
-            //     const { valueSI, unitSI } = utils.convertToSI(value, unit);
-            //     filter.and.push({
-            //       [`scientificMetadata.${name}.valueSI`]: valueSI,
-            //     });
-            //     filter.and.push({
-            //       [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-            //     });
-            //   }
-            // } else {
-            //   filter.and.push({
-            //     "or": [{
-            //       [`scientificMetadata.${name}.value`]: value
-            //     },
-            //     {
-            //       [`scientificMetadata.${name}.v`]: value
-            //     }]
-            //   });
-            // }
-            return filter;
+            return mapWhereFilterParameter(name,value,unit);
           } else {
             const err = new Error();
             err.name = "FilterError";
