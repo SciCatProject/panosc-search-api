@@ -5,12 +5,16 @@ const scicatPublishedDataService = new ScicatService.PublishedData();
 
 const PSSService = require("../pss-service");
 const pssScoreService = new PSSService.Score();
-const pssScoreEnabled = process.env.PSS_ENABLE || false;
-const returnZeroScore = process.env.RETURN_ZERO_SCORE || false;
 
 const filterMapper = require("../filter-mapper");
 const responseMapper = require("../response-mapper");
 const utils = require("../utils");
+
+//const pssScoreEnabled = process.env.PSS_ENABLE || false;
+const pssScoreEnabled = utils.getBoolEnvVar("PSS_ENABLE",false);
+const returnZeroScore = utils.getBoolEnvVar("RETURN_ZERO_SCORE",false);
+//const passDocumentsToScoring = process.env.PASS_DOCUMENTS_TO_SCORING || false;
+
 
 module.exports = function (Document) {
 
@@ -47,11 +51,11 @@ module.exports = function (Document) {
     // perform scoring only if is enabled
     if (pssScoreEnabled) {
       // extract the ids of the dataset returned by SciCat
-      //const documentsIds = publishedData.map((i) => i.doi);
+      const documentsIds = publishedData.map((i) => i.doi);
       const scores = (
         query
-          //? await pssScoreService.score(query, documentsIds, "documents")
-          ? await pssScoreService.score(query, [], "documents")
+          ? await pssScoreService.score(query, documentsIds, "documents")
+          //? await pssScoreService.score(query, [], "documents")
           : {});
       console.log(Object.keys(scores).length + " documents scored");
 

@@ -1,8 +1,10 @@
 "use strict";
 
 const superagent = require("superagent");
+const utils = require("./utils");
 
 const baseUrl = process.env.PSS_BASE_URL || "http://localhost:8000";
+const passDocumentsToScoring = utils.getBoolEnvVar("PASS_DOCUMENTS_TO_SCORING",false);
 
 exports.Score = class {
 
@@ -25,15 +27,17 @@ exports.Score = class {
     console.log(" - number of items : ", itemIds.length);
     console.log(" - group : ", group);
     console.log(" - limit : ", limit);
+    console.log(" - passing items: ", passDocumentsToScoring);
 
     const res = await superagent
       .post(this.pssScoreUrl)
       .send({
         query: query,
-        itemIds: itemIds,
+        itemIds: ( passDocumentsToScoring ? itemIds : [] ),
         group: group,
         limit: limit
       }).catch(() => {
+        console.log(" error accessing pss");
         return { text: JSON.stringify({ scores: [] }) };
       });
 
