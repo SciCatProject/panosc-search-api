@@ -85,12 +85,14 @@ exports.PublishedData = class {
    */
 
   async find(filter) {
+    console.log("PublishedData.find - BEGIN");
     const jsonFilter = JSON.stringify(filter);
-    //console.log(">>> PublishedData.find filter", jsonFilter);
+    console.log("PublishedData.find filter", jsonFilter);
     const url = jsonFilter
       ? baseUrl + "/PublishedData?filter=" + jsonFilter
       : baseUrl + "/PublishedData";
     const res = await superagent.get(url);
+    console.log("PublishedData.find - END");
     return JSON.parse(res.text);
   }
 

@@ -59,6 +59,7 @@ module.exports = function (Document) {
           async (data) => await responseMapper.document(data, filter, scores),
         ),
       );
+      console.log("Merged documents and scores");
       if (query) {
         // filters out zero score documents if needed
         if (!returnZeroScore) {
