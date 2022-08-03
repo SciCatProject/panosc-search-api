@@ -113,7 +113,6 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
   };
 
   const inclusions = utils.getInclusions(filter);
-  //console.log("Response Mapper Document: doi " + scicatPublishedData.doi);
 
   if (Object.keys(inclusions).includes("datasets")) {
     const scicatFilter = await filterMapper.dataset(inclusions.datasets);
@@ -145,10 +144,6 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
           filter.include = scicatFilter.include;
         }
         const datasets = await scicatDatasetService.find(filter);
-        // if ( pid == "20.500.12269/2511nicos_00002511.hdf" ) {
-        //   console.log(" - query : " + JSON.stringify(filter));
-        //   console.log(" - Found " + datasets.length + " datasets");
-        // }
         return datasets.length > 0 ? datasets[0] : {};
       })
     );

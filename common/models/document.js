@@ -20,6 +20,7 @@ module.exports = function (Document) {
    */
 
   Document.find = async function (filter, query) {
+    console.log("Document.find -  BEGIN");
     // remove filter limit
     var limit = -1;
     // retrieve scoring parameters if enabled
@@ -39,6 +40,7 @@ module.exports = function (Document) {
     // checks if we have hard filter on dataset's technology
     filter = await filterMapper.expandTechniquesInFilter(filter);
 
+    console.log("Retrieving published data from scicat");
     const scicatFilter = filterMapper.document(filter);
     const publishedData = await scicatPublishedDataService.find(scicatFilter);
     console.log(publishedData.length + " documents found");
@@ -65,6 +67,7 @@ module.exports = function (Document) {
         }
         // sort results by score
         scoredDocuments.sort(utils.compareDocuments);
+        console.log("Document sorted");
       }
       // limit is applied in Document.afterRemote("find"...
       // check below
@@ -75,15 +78,18 @@ module.exports = function (Document) {
         filter.limit = limit;
       }
 
+      console.log("Document.find -  END with scoring");
       return scoredDocuments;
     }
     else {
       // no scoring, returns results as they are
-      return await Promise.all(
+      const documents = await Promise.all(
         publishedData.map(
           async (data) => await responseMapper.document(data, filter)
         )
       );
+      console.log("Document.find -  END without scoring");
+      return documents;
     }
   };
 
@@ -113,6 +119,7 @@ module.exports = function (Document) {
   };
 
   Document.afterRemote("find", (ctx, result, next) => {
+    console.log("Document.find.afterRemote -  BEGIN");
     const filter = ctx.args.filter ? ctx.args.filter : {};
     const inclusions = utils.getInclusionNames(filter);
 
@@ -137,6 +144,7 @@ module.exports = function (Document) {
       ctx.result = ctx.result.splice(0, filter.limit);
     }
 
+    console.log("Document.find.afterRemote -  END");
     next();
   });
 };
