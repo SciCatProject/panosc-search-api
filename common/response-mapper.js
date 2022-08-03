@@ -111,10 +111,11 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
     score: 0.0,
     releaseDate: new Date(String(scicatPublishedData.publicationYear))
   };
-
+  //console.log("response-mapper.documents - BEGIN");
   const inclusions = utils.getInclusions(filter);
 
   if (Object.keys(inclusions).includes("datasets")) {
+    console.log("response-mapper.documents - dataset");
     const scicatFilter = await filterMapper.dataset(inclusions.datasets);
     const pidArray = scicatPublishedData.pidArray.map((pid) =>
       pid.split("/")[0] === pid.split("/")[1]
@@ -154,14 +155,18 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
     );
   }
   if (Object.keys(inclusions).includes("members")) {
+    console.log("response-mapper.documents - members");
     document.members = this.members(scicatPublishedData, inclusions.members);
   }
   if (Object.keys(inclusions).includes("parameters")) {
+    console.log("response-mapper.documents - paramerters");
     document.parameters = [];
   }
   if (pssScoreEnabled && Object.keys(scores).includes(document.pid)) {
+    console.log("response-mapper.documents - score");
     document.score = scores[document.pid];
   }
+  //console.log("response-mapper.documents - END");
   return document;
 };
 

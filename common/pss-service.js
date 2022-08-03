@@ -18,9 +18,9 @@ exports.Score = class {
    * @param {int} limit number of items we want returned
    * @returns {object[]} Array of the scores
    */
-  async score(query, itemIds, group = "default", limit = -1) {
+  async score(query, itemIds=[], group = "default", limit = -1) {
 
-    console.log(">>> Score.score: score requested");
+    console.log(">>> Score.score - BEGIN");
     console.log(" - query : ", query);
     console.log(" - number of items : ", itemIds.length);
     console.log(" - group : ", group);
@@ -36,10 +36,14 @@ exports.Score = class {
       }).catch(() => {
         return { text: JSON.stringify({ scores: [] }) };
       });
+
+    console.log(" retrieved scores");
     const jsonRes = JSON.parse(res.text);
 
+    console.log(" scores parsed");
     const scores = Object.assign({}, ...jsonRes.scores.map((i) => ({ [i.itemId]: i.score })));
 
+    console.log(">>> Score.score - END");
     return scores;
   }
 
