@@ -20,7 +20,7 @@ module.exports = function(server) {
     const environment = process.env.NODE_ENV || "unknown";
     const techniquesURL = process.env.PANET_BASE_URL || "unknown";
     const scoringURL = process.env.PSS_BASE_URL || "unknown";
-    const scoringEnabled = process.env.PSS_ENABLE || "unknown";
+    const scoringEnabled = utils.getBoolEnvVar("PSS_ENABLE",false);
     const returnZeroScore = utils.getBoolEnvVar("RETURN_ZERO_SCORE",false);
     const passDocumentsToScoring = utils.getBoolEnvVar("PASS_DOCUMENTS_TO_SCORING",false);
 
