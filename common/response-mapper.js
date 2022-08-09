@@ -145,6 +145,9 @@ exports.document = async (scicatPublishedData, filter, scores = {}) => {
           filter.include = scicatFilter.include;
         }
         const datasets = await scicatDatasetService.find(filter);
+        if (datasets.length > 0) {
+          console.log("response-mapper.documents - dataset found " + pid);
+        }
         return datasets.length > 0 ? datasets[0] : {};
       })
     );

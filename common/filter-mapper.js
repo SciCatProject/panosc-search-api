@@ -53,9 +53,11 @@ exports.dataset = async (filter) => {
   if (!filter) {
     return null;
   } else {
-    let scicatFilter = {};
+    let scicatFilter = {
+      "where" : []
+    };
     if (filter.where) {
-      scicatFilter.where = mapWhereFilter(filter.where, "dataset");
+      scicatFilter.where.push(mapWhereFilter(filter.where, "dataset"));
     }
     if (filter.include) {
       const parameters = filter.include.filter(
@@ -63,7 +65,11 @@ exports.dataset = async (filter) => {
       );
       parameters.forEach(parameter => {
         if (parameter.scope && parameter.scope.where) {
-          scicatFilter = mapField(parameter, scicatFilter);
+          scicatFilter.where.push(
+            mapWhereFilter(
+              parameter.scope.where,
+              parameter.relation));
+          //scicatFilter = mapField(parameter, scicatFilter);
         }
       });
 
@@ -74,7 +80,17 @@ exports.dataset = async (filter) => {
         //techniques.scope.where = await PanetOntology.panet(
         //  techniques.scope.where);
         //console.log("techniques.scope.where", techniques.scope.where);
-        scicatFilter = mapField(techniques, scicatFilter);
+        //scicatFilter = mapField(techniques, scicatFilter);
+        scicatFilter.where.push(
+          mapWhereFilter(
+            techniques.scope.where,
+            techniques.relation));
+      }
+      if ( scicatFilter.where.length > 0) {
+        scicatFilter.where = { "and" : scicatFilter.where };
+      }
+      else{
+        delete scicatFilter.where;
       }
       const include = filter.include
         .filter((inclusion) => inclusion.relation !== "parameters")
@@ -707,6 +723,7 @@ const mapField = (field, filter) => {
   }
   return filter;
 };
+
 
 /**
  * Map PaNOSC member filter to SciCat member filter

@@ -9,6 +9,7 @@ const passDocumentsToScoring = utils.getBoolEnvVar("PASS_DOCUMENTS_TO_SCORING",f
 exports.Score = class {
 
   constructor() {
+    this.pssBaseUrl = baseUrl;
     this.pssScoreUrl = baseUrl + "/score";
   }
 
@@ -28,6 +29,8 @@ exports.Score = class {
     console.log(" - group : ", group);
     console.log(" - limit : ", limit);
     console.log(" - passing items: ", passDocumentsToScoring);
+
+    //const status = await this.status();
 
     const res = await superagent
       .post(this.pssScoreUrl)
@@ -51,4 +54,22 @@ exports.Score = class {
     return scores;
   }
 
+  /**
+   * query pss root url to retrieve status
+   * @returns {object[]} object return by pss
+   */
+  async status() {
+    const res = await superagent
+      .get(this.pssBaseUrl)
+      .catch(()  => {
+        console.log(" Error: impossible to contact pss");
+        return { text: JSON.stringify({ status: 0 }) };
+      });
+
+    let status = JSON.parse(res.text);
+    if (!("status" in status)) {
+      status.status = 1;
+    }
+    return status;
+  }
 };
