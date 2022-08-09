@@ -704,6 +704,7 @@ const mapIncludeFilter = (include) =>
  * @returns {object} SciCat loopback filter object
  */
 
+/*
 const mapField = (field, filter) => {
   if (filter.where) {
     const scicatField =
@@ -723,7 +724,7 @@ const mapField = (field, filter) => {
   }
   return filter;
 };
-
+*/
 
 /**
  * Map PaNOSC member filter to SciCat member filter
