@@ -20,10 +20,10 @@ const expandTechniquesInFilter = async (filter) => {
   if (filter && filter.include) {
     filter.include = await Promise.all(
       filter.include.map(async (v1) => {
-        if ( v1.relation == "datasets" && v1.scope && v1.scope.include) {
+        if (v1.relation == "datasets" && v1.scope && v1.scope.include) {
           v1.scope.include = await Promise.all(
             v1.scope.include.map(async (v2) => {
-              if (v2.relation=="techniques" && v2.scope && v2.scope.where ) {
+              if (v2.relation == "techniques" && v2.scope && v2.scope.where) {
                 v2.scope.where = await expandTechniques(v2.scope.where);
               }
               return v2;
@@ -54,7 +54,7 @@ exports.dataset = async (filter) => {
     return null;
   } else {
     let scicatFilter = {
-      "where" : []
+      "where": []
     };
     if (filter.where) {
       scicatFilter.where.push(mapWhereFilter(filter.where, "dataset"));
@@ -86,10 +86,10 @@ exports.dataset = async (filter) => {
             techniques.scope.where,
             techniques.relation));
       }
-      if ( scicatFilter.where.length > 0) {
-        scicatFilter.where = { "and" : scicatFilter.where };
+      if (scicatFilter.where.length > 0) {
+        scicatFilter.where = { "and": scicatFilter.where };
       }
-      else{
+      else {
         delete scicatFilter.where;
       }
       const include = filter.include
@@ -294,28 +294,32 @@ const mapWhereFilterParameter = (name, value, unit) => {
 
         // now we check if the parameter is one of the PaNOSC ones
         // if that's the case, we include the range option
-        if ( panoscParameters.includes(name) ) {
+        if (panoscParameters.includes(name)) {
           // we check the condition
           // at the momenmt only "between" is implemented
-          if ( Object.keys(formattedValueSI).includes("between") ) {
+          if (Object.keys(formattedValueSI).includes("between")) {
             // we build an or between the condition on the main parameter
             // and the min and max version
             output.or = [
-              { "and" : output.and }
+              { "and": output.and }
             ];
             // add condition on min and max
             const nameMin = name + "_min";
             const nameMax = name + "_max";
             output.or.push({
-              "and" : [
-                { "and" : [
-                  { [`scientificMetadata.${nameMin}.valueSI`]: { "lte" : Math.max(...arrayValues.map((i) => i.valueSI)) } },
-                  { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
-                ] },
-                { "and" : [
-                  { [`scientificMetadata.${nameMax}.valueSI`]: { "gte" : Math.min(...arrayValues.map((i) => i.valueSI)) } },
-                  { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
-                ] }
+              "and": [
+                {
+                  "and": [
+                    { [`scientificMetadata.${nameMin}.valueSI`]: { "lte": Math.max(...arrayValues.map((i) => i.valueSI)) } },
+                    { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
+                  ]
+                },
+                {
+                  "and": [
+                    { [`scientificMetadata.${nameMax}.valueSI`]: { "gte": Math.min(...arrayValues.map((i) => i.valueSI)) } },
+                    { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
+                  ]
+                }
               ]
             });
 
@@ -331,93 +335,68 @@ const mapWhereFilterParameter = (name, value, unit) => {
         const formattedValueSI = Object.assign(
           ...Object.keys(value).map((key) => ({ [key]: valueSI }))
         );
+        const extraSearch = extraFilterFields(name, valueSI, unitSI, value);
+
         output.and.push({
           [`scientificMetadata.${name}.valueSI`]: formattedValueSI,
         });
         output.and.push({
           [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
         });
+        if (extraSearch) {
+          output.or = [
+            { "and": output.and },
+            { "and": extraSearch.and }
+          ];
+          delete output.and;
+        }
 
         // now we check if the parameter is one of the PaNOSC ones
         // if that's the case, we include the range option
-        if ( panoscParameters.includes(name) ) {
-          // we check the condition
-          // at the momenmt only "gte" and "lte" are implemented
-          if ( Object.keys(formattedValueSI).includes("lte") ) {
-            // we build an or between the condition on the main parameter
-            // and the min and max version
+        if (Object.keys(formattedValueSI).includes("lte")) {
+          // we build an or between the condition on the main parameter
+          // and the min and max version
+          if (!output.or)
             output.or = [
-              { "and" : output.and }
+              { "and": output.and }
             ];
-            // add condition on min and max
-            const nameMin = name + "_min";
-            output.or.push(
-              { "and" : [
-                { [`scientificMetadata.${nameMin}.valueSI`]: { "lte" : valueSI } },
+          // add condition on min and max
+          const nameMin = name + "_min";
+          output.or.push(
+            {
+              "and": [
+                { [`scientificMetadata.${nameMin}.valueSI`]: { "lte": valueSI } },
                 { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
-              ] }
-            );
+              ]
+            }
+          );
 
-            // remove original and
-            delete output.and;
-          }
-          else if ( Object.keys(formattedValueSI).includes("gte") ) {
-            // we build an or between the condition on the main parameter
-            // and the min and max version
-            output.or = [
-              { "and" : output.and }
-            ];
-            // add condition on min and max
-            const nameMax = name + "_max";
-            output.or.push(
-              { "and" : [
-                { [`scientificMetadata.${nameMax}.valueSI`]: { "gte" : valueSI } },
-                { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
-              ] }
-            );
-
-            // remove original and
-            delete output.and;
-          }
+          // remove original and
+          delete output.and;
         }
+        else if (Object.keys(formattedValueSI).includes("gte")) {
+          // we build an or between the condition on the main parameter
+          // and the min and max version
+          if (!output.or)
+            output.or = [
+              { "and": output.and }
+            ];
+          // add condition on min and max
+          const nameMax = name + "_max";
+          output.or.push(
+            {
+              "and": [
+                { [`scientificMetadata.${nameMax}.valueSI`]: { "gte": valueSI } },
+                { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
+              ]
+            }
+          );
 
+          // remove original and
+          delete output.and;
+        }
       }
-    } else {
-      const { valueSI, unitSI } = utils.convertToSI(value, unit);
-      output.and.push({
-        [`scientificMetadata.${name}.valueSI`]: valueSI,
-      });
-      output.and.push({
-        [`scientificMetadata.${name}.unitSI`]: utils.includeUnitFullName(unitSI),
-      });
 
-      // now we check if the parameter is one of the PaNOSC ones
-      // if that's the case, we include the range option
-      if ( panoscParameters.includes(name) ) {
-        // we build an or between the condition on the main parameter
-        // and the min and max version
-        output.or = [
-          { "and" : output.and }
-        ];
-        // add condition on min and max
-        const nameMin = name + "_min";
-        const nameMax = name + "_max";
-        output.or.push({
-          "and" : [
-            { "and" : [
-              { [`scientificMetadata.${nameMin}.valueSI`]: { "lte" : valueSI } },
-              { [`scientificMetadata.${nameMin}.unitSI`]: utils.includeUnitFullName(unitSI) }
-            ] },
-            { "and" : [
-              { [`scientificMetadata.${nameMax}.valueSI`]: { "gte" : valueSI } },
-              { [`scientificMetadata.${nameMax}.unitSI`]: utils.includeUnitFullName(unitSI) }
-            ] }
-          ]
-        });
-
-        // remove original and
-        delete output.and;
-      }
     }
   } else {
     output.and.push({
@@ -549,7 +528,7 @@ const mapWhereFilter = (where, model) => {
       if (name) {
         scicatWhere.and = [];
         if (value !== null) {
-          scicatWhere = mapWhereFilterParameter(name,value,unit);
+          scicatWhere = mapWhereFilterParameter(name, value, unit);
         } else {
           const err = new Error();
           err.name = "FilterError";
@@ -571,7 +550,7 @@ const mapWhereFilter = (where, model) => {
       const scientificMetadata = parameters.map(({ name, value, unit }) => {
         if (name) {
           if (value !== null) {
-            return mapWhereFilterParameter(name,value,unit);
+            return mapWhereFilterParameter(name, value, unit);
           } else {
             const err = new Error();
             err.name = "FilterError";
@@ -764,3 +743,39 @@ const mapMembers = (members, filter) => {
   }
   return filter;
 };
+
+function extraFilterFields(name, valueSI, unitSI, inputFilter) {
+  let extraValue;
+  let extraUnit;
+  if (name === "incident_photon_energy" || name === "incident_wavelength") {
+    let valueOrig = valueSI;
+    let unitOrig = unitSI;
+    if (name === "incident_wavelength") {
+      valueOrig = 1.986e-25 / valueOrig;
+      unitOrig = "(kg m^2) / s^2";
+    }
+    // eslint-disable-next-line no-unused-vars
+    const { value, _ } = utils.convertToUnit(
+      valueOrig,
+      unitOrig,
+      "keV"
+    );
+
+    extraValue = value;
+    extraUnit = "keV";
+  }
+  else if (name === "sample_temperature") {
+    extraValue = valueSI;
+    extraUnit = "Kelvin";
+  }
+  else return;
+  const formattedValue = Object.assign(
+    ...Object.keys(inputFilter).map((key) => ({ [key]: extraValue }))
+  );
+  const mappedValues = mappings.psiParameter[name];
+  return { and: [
+    { [`scientificMetadata${mappedValues.value}`]: formattedValue },
+    { [`scientificMetadata${mappedValues.unit}`]: utils.includeUnitFullName(extraUnit) }
+  ] };
+}
+

@@ -32,3 +32,21 @@ exports.panoscToScicatTechniques = {
   pid: "techniques.pid",
   name: "techniques.name",
 };
+
+exports.psiParameter = {
+  // eslint-disable-next-line camelcase
+  incident_photon_energy: {
+    value: ".beamlineParameters.Beam energy.v",
+    unit: ".beamlineParameters.Beam energy.u",
+  },
+  // eslint-disable-next-line camelcase
+  sample_temperature: {
+    value: ".sampleTemperature.value",
+    unit: ".sampleTemperature.unit",
+  },
+  // eslint-disable-next-line camelcase
+  incident_wavelength: {
+    value: ".beamlineParameters.Beam energy.v",
+    unit: ".beamlineParameters.Beam energy.u",
+  },
+};

@@ -3,6 +3,7 @@
 const filterMapper = require("./filter-mapper");
 const utils = require("./utils");
 const ScicatService = require("./scicat-service");
+const { psiParameter } = require("./mappings");
 const scicatDatasetService = new ScicatService.Dataset();
 const scicatPublishedDataService = new ScicatService.PublishedData();
 const scicatSampleService = new ScicatService.Sample();
@@ -263,19 +264,44 @@ exports.parameters = (scientificMetadata, filter) => {
           : [filter.where]
       )
       : {};
+  let paramKeys = Object.keys(parameters);
   return Object.keys(scientificMetadata).map((key) => {
-    if (parameters[key] && parameters[key].unit) {
-      const { value, unit } = utils.convertToUnit(
-        scientificMetadata[key].valueSI,
-        scientificMetadata[key].unitSI,
-        parameters[key].unit
-      );
-      return {
-        name: key,
-        value,
-        unit,
-      };
-    } else {
+    const mapped = paramKeys.map(paramKey => {
+      if (parameters[paramKey].unit) {
+        const mappedParam = psiParameter[paramKey];
+        let v;
+        let u;
+        if (mappedParam) {
+          v = (mappedParam.value).split(".").filter(_v => _v).reduce((o, i) => o[i], scientificMetadata);
+          u = (mappedParam.unit).split(".").filter(_v => _v).reduce((o, i) => o[i], scientificMetadata);
+        }
+        else {
+          v = scientificMetadata[key].valueSI;
+          u = scientificMetadata[key].unitSI;
+        }
+        if (paramKey === "incident_wavelength") {
+          v = 1.986e-25 / v;
+          u = "m";
+        }
+        const { value, unit } = utils.convertToUnit(
+          v,
+          u === "Kelvin"? "kelvin": u,
+          parameters[paramKey].unit
+        );
+        paramKeys.shift();
+        return {
+          name: paramKey,
+          value,
+          unit,
+        };
+      }
+    });
+    if (mapped.length > 0 && mapped.some(c => c)){
+      return mapped[0];
+    }
+    else {
+      if (!scientificMetadata[key].value && !scientificMetadata[key].v)
+        return { name: undefined };
       return {
         name: key,
         value: (
