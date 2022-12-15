@@ -118,7 +118,7 @@ exports.dataset = async (filter) => {
 
 exports.document = (filter) => {
   if (!filter) {
-    return null;
+    return { fields: { thumbnail: false } };
   } else {
     let scicatFilter = {};
     if (filter.where) {
@@ -165,6 +165,11 @@ exports.document = (filter) => {
     }
     if (filter.limit) {
       scicatFilter.limit = filter.limit;
+    }
+    if (filter.fields) {
+      scicatFilter.fields.thumbnail = false;
+    } else {
+      scicatFilter.fields = { thumbnail: false };
     }
     return scicatFilter;
   }
