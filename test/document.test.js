@@ -26,7 +26,7 @@ describe("Document", () => {
   describe("GET /documents", () => {
     context("without filter", () => {
       it("should return an array of documents", (done) => {
-        sandbox
+        const findStub = sandbox
           .stub(ScicatPubDataService.prototype, "find")
           .resolves(mockStubs.publishedData.find.noFilter);
 
@@ -45,7 +45,9 @@ describe("Document", () => {
               expect(document).to.have.property("type");
               expect(document).to.have.property("title");
               expect(document).to.have.property("score");
+              expect(document).not.to.have.property("thumbnail");
             });
+            expect(findStub.args[0][0]).to.be.eql({ fields:{ thumbnail: false } });
             done();
           });
       });
@@ -53,7 +55,7 @@ describe("Document", () => {
 
     context("where type is publication and person is James Chadwick", () => {
       it("should return an array of documents matching the type and the person", (done) => {
-        sandbox
+        const findStub = sandbox
           .stub(ScicatPubDataService.prototype, "find")
           .resolves(mockStubs.publishedData.find.personFilter);
         const callback = sandbox.stub(ScicatDatasetService.prototype, "find");
@@ -104,9 +106,19 @@ describe("Document", () => {
               expect(document.datasets).to.be.an("array").and.not.empty;
               expect(document).to.have.property("members");
               expect(document.members).to.be.an("array").and.not.empty;
+              expect(document).not.to.have.property("thumbnail");
               document.members.forEach((member) => {
                 expect(member.person.fullName).to.equal("James Chadwick");
               });
+            });
+            expect(findStub.args[0][0]).to.be.eql({
+              where: {
+                or: [
+                  { creator: "James Chadwick" },
+                  { authors:"James Chadwick" }
+                ]
+              },
+              fields: { thumbnail: false }
             });
             done();
           });
@@ -390,7 +402,7 @@ describe("Document", () => {
 
   describe("GET /documents/{id}", () => {
     it("should return the document with the requested pid", (done) => {
-      sandbox
+      const findByIdStub = sandbox
         .stub(ScicatPubDataService.prototype, "findById")
         .resolves(mockStubs.publishedData.findById);
 
@@ -408,6 +420,9 @@ describe("Document", () => {
           expect(res.body).to.have.property("isPublic");
           expect(res.body).to.have.property("type");
           expect(res.body).to.have.property("title");
+          expect(findByIdStub.args[0][1]).to.be.eql(
+            { fields: { thumbnail: false } }
+          );
           done();
         });
     });
