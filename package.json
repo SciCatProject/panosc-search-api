@@ -24,7 +24,7 @@
   "author": "",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@snyk/protect": "^1.1058.0",
+    "@snyk/protect": "^1.1061.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "helmet": "^3.23.3",
