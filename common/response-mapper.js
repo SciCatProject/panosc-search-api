@@ -264,60 +264,75 @@ exports.parameters = (scientificMetadata, filter) => {
           : [filter.where]
       )
       : {};
-  let paramKeys = Object.keys(parameters);
-  return Object.keys(scientificMetadata).map((key) => {
-    const mapped = paramKeys.map(paramKey => {
-      if (parameters[paramKey].unit) {
-        const mappedParam = psiParameter[paramKey];
-        let v;
-        let u;
-        if (mappedParam) {
-          v = (mappedParam.value).split(".").filter(_v => _v).reduce((o, i) => o[i], scientificMetadata);
-          u = (mappedParam.unit).split(".").filter(_v => _v).reduce((o, i) => o[i], scientificMetadata);
-        }
-        else {
-          v = scientificMetadata[key].valueSI;
-          u = scientificMetadata[key].unitSI;
-        }
-        if (paramKey === "incident_wavelength") {
-          v = 1.986e-25 / v;
-          u = "m";
-        }
-        const { value, unit } = utils.convertToUnit(
-          v,
-          u === "Kelvin"? "kelvin": u,
-          parameters[paramKey].unit
-        );
-        paramKeys.shift();
-        return {
-          name: paramKey,
-          value,
-          unit,
+  const convert = (obj, key, result) => {
+    if(typeof obj !== "object" || obj.v || obj.value) {
+      result[key] = obj;
+      return result;
+    }
+    const keys = Object.keys(obj);
+
+    for(let i = 0; i < keys.length; i++){
+      const newKey = key ? (key + "." + keys[i]) : keys[i];
+      convert(obj[keys[i]], newKey, result);
+    }
+
+    return result;
+  };
+  const flattenedMetadata = convert(scientificMetadata, "", {});
+  const transposeMapping = Object.keys(psiParameter).reduce(
+    (previousValue, currentValue) =>
+    {
+      if (currentValue === "incident_wavelength") return previousValue;
+      const key = psiParameter[currentValue].value.split(".").slice(1, -1).join(".");
+      previousValue[key] = currentValue;
+      return previousValue;
+    }
+    , {});
+  let incidentWavelengthObj = [];
+  const incidentWavelength = flattenedMetadata[
+    psiParameter["incident_wavelength"].value.split(".").slice(1, -1).join(".")
+  ];
+  if (parameters["incident_wavelength"] &&
+  parameters["incident_wavelength"].unit &&
+      incidentWavelength.u
+  )
+  {
+    const valueUnit = utils.convertToUnit(
+      1.986e-25 / incidentWavelength.v,
+      incidentWavelength.u,
+      parameters["incident_wavelength"].unit
+    );
+
+    incidentWavelengthObj =
+        {
+          name: "incident_wavelength",
+          value: valueUnit.value,
+          unit: valueUnit.unit
         };
-      }
-    });
-    if (mapped.length > 0 && mapped.some(c => c)){
-      return mapped[0];
+
+  }
+
+  return Object.keys(flattenedMetadata).map((key) => {
+    const content = flattenedMetadata[key];
+    let value = content.value != undefined && content.value != null?
+      content.value: (content.v || content);
+    let unit = content.u || content.unit || "";
+    const name = transposeMapping[key] || key;
+    if (parameters[name] && parameters[name].unit) {
+      const valueUnit = utils.convertToUnit(
+        value,
+        unit === "Kelvin"? "kelvin": unit,
+        parameters[name].unit
+      );
+      value = valueUnit.value;
+      unit = valueUnit.unit;
     }
-    else {
-      if (!scientificMetadata[key].value && !scientificMetadata[key].v)
-        return { name: undefined };
-      return {
-        name: key,
-        value: (
-          scientificMetadata[key].value !== undefined && scientificMetadata[key].value !== null
-            ? scientificMetadata[key].value
-            : scientificMetadata[key].v),
-        unit: (
-          scientificMetadata[key].unit !== undefined && scientificMetadata[key].unit !== null
-            ? scientificMetadata[key].unit
-            : (
-              scientificMetadata[key].u !== undefined && scientificMetadata[key].u !== null
-                ? scientificMetadata[key].u
-                : ""))
-      };
-    }
-  });
+    return {
+      name: name,
+      value: value,
+      unit: unit
+    };
+  }).concat(incidentWavelengthObj);
 };
 
 /**
