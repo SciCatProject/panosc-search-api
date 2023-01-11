@@ -232,18 +232,16 @@ exports.members = (scicatPublishedData, filter) => {
       )
     )
     : {};
-  const creators =
-    inclusions.person && scicatPublishedData.creator
-      ? scicatPublishedData.creator.map((creator) => ({
-        person: { fullName: creator },
-      }))
-      : [];
-  const authors =
-    inclusions.person && scicatPublishedData.authors
-      ? scicatPublishedData.authors.map((author) => ({
-        person: { fullName: author },
-      }))
-      : [];
+  const creators = [];
+  if (inclusions.person && scicatPublishedData.creator)
+    scicatPublishedData.creator.map((creator) =>
+      creator.split(",").map(c => creators.push({ person: { fullName: c } }))
+    );
+  const authors = [];
+  if (inclusions.person && scicatPublishedData.authors)
+    scicatPublishedData.authors.map((author) =>
+      author.split(",").map(a => creators.push({ person: { fullName: a } }))
+    );
 
   return [...new Map(creators.concat(authors).map((item) => [item["person"]["fullName"], item])).values()];
 };
@@ -332,7 +330,7 @@ exports.parameters = (scientificMetadata, filter) => {
       value: value,
       unit: unit
     };
-  }).concat(incidentWavelengthObj);
+  }).concat(incidentWavelengthObj).filter(item => item.value);
 };
 
 /**
