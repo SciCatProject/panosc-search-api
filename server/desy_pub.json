@@ -1,0 +1,29 @@
+{
+  "doi": "10.11577/1598270",
+  "creator": [
+    "Oleksandr Yefanov"
+  ],
+  "publisher": "DESY",
+  "publicationYear": 2020,
+  "title": "Evaluation of serial crystallographic structure determination within megahertz pulse trains",
+  "url": "https://cxidb.org/id-98.html",
+  "abstract": "All 'hits' in hdf5 files (Cheetah slab format) together with geometries and all CrystFEL .stream files, .hkl files and .mtz files. Also all Phenix .pdb files together with log files. All scripts needed to reproduce the result are also included.",
+  "dataDescription": "Data of the turn pattern matching paper .",
+  "resourceType": "raw",
+  "numberOfFiles": null,
+  "sizeOfArchive": null,
+  "pidArray": [
+    "10.11577/1598270"
+  ],
+  "registeredTime": "2020-02-07T12:25:37.608Z",
+  "status": "registered",
+  "relatedPublications": [
+    "https://dx.doi.org/10.1063/1.5124387",
+    "https://www.osti.gov/dataexplorer/biblio/dataset/1598270"
+  ],
+  "downloadLink": "",
+  "createdBy": "ms-ad.frey_m",
+  "updatedBy": "archiveManager",
+  "createdAt": "2019-02-07T12:25:37.608Z",
+  "updatedAt": "2020-02-07T12:25:37.608Z"
+}

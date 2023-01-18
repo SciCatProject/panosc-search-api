@@ -4,6 +4,9 @@ const superagent = require("superagent");
 
 const baseUrl = process.env.BASE_URL || "http://localhost:3030/api/v3";
 
+const desyPub = require("../server/desy_pub.json");
+const desyDs = require("../server/desy_ds.json");
+
 exports.Dataset = class {
   /**
    * Query SciCat datasets matching filter
@@ -18,6 +21,33 @@ exports.Dataset = class {
       ? baseUrl + "/Datasets?filter=" + jsonFilter
       : baseUrl + "/Datasets";
     const res = await superagent.get(url);
+    if (!filter.where)
+      return JSON.parse(res.text).concat(desyDs);
+    if
+    (filter.where.and && filter.where.and.length > 0 &&
+        filter.where.and.every(f => {
+          if (f.pid === desyDs.pid)
+            return true;
+          else if (f["techniques.pid"] && f["techniques.pid"].inq.includes(desyDs.techniques[0].pid))
+            return true;
+          else if (f.or && f.or.length > 0 && f.or[1].and
+          && f.or[1].and.length > 0 && f.or[1].and[0] &&
+          f.or[1].and[0]["scientificMetadata.beamlineParameters.Beam energy.v"]) {
+            const param = f.or[1].and[0]["scientificMetadata.beamlineParameters.Beam energy.v"];
+            if (param.gte)
+              return desyDs.scientificMetadata.beamlineParameters["Beam energy"].v >= param.gte;
+            else if (param.lte)
+              return desyDs.scientificMetadata.beamlineParameters["Beam energy"].v <= param.lte;
+            else if (param.between)
+              return desyDs.scientificMetadata.beamlineParameters["Beam energy"].v >= param.between[0] && desyDs.scientificMetadata.beamlineParameters["Beam energy"].v <= param.between[1];
+          }
+        }
+
+        )
+    )
+      return JSON.parse(res.text).concat(desyDs);
+    if (filter.where.pid === desyDs.pid)
+      return [desyDs];
     return JSON.parse(res.text);
   }
 
@@ -93,7 +123,7 @@ exports.PublishedData = class {
       : baseUrl + "/PublishedData";
     const res = await superagent.get(url);
     console.log("PublishedData.find - END");
-    return JSON.parse(res.text);
+    return JSON.parse(res.text).concat(desyPub);
   }
 
   /**
@@ -108,6 +138,8 @@ exports.PublishedData = class {
     const jsonFilter = JSON.stringify(filter);
     //console.log(">>> PublishedData.findById pid", encodedId);
     //console.log(">>> PublishedData.findById filter", jsonFilter);
+    if (id === desyPub.doi)
+      return desyPub;
     const url = jsonFilter
       ? baseUrl + "/PublishedData/" + encodedId + "?filter=" + jsonFilter
       : baseUrl + "/PublishedData/" + encodedId;

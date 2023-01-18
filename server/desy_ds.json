@@ -1,0 +1,24 @@
+{
+  "pid": "10.11577/1598270",
+  "isPublished": true,
+  "datasetName": "CXIDB ID 98",
+  "creationTime": "2020-02-07T00:00:00Z",
+  "size": 0,
+  "techniques": [
+    {
+      "pid": "http://purl.org/pan-science/PaNET/PaNET01168",
+      "name": "serial femtosecond crystallography"
+    }
+  ],
+  "scientificMetadata": {
+    "beamlineParameters": {
+      "Beam energy": {
+        "u": "keV",
+        "v": 9.30
+      },
+      "Sample": "Lysozyme",
+      "Lightsource": "European XFEL",
+      "Beamline": "SPB/SFX"
+    }
+  }
+}
