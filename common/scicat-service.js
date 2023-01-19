@@ -123,7 +123,11 @@ exports.PublishedData = class {
       : baseUrl + "/PublishedData";
     const res = await superagent.get(url);
     console.log("PublishedData.find - END");
-    return JSON.parse(res.text).concat(desyPub);
+    return JSON.parse(res.text).concat(desyPub).filter(
+      r => ![
+        "10.16907/1058aa1f-3ef0-45d8-b2a6-8675571b78bd", 
+        "10.16907/011ddd1e-a3f6-48a2-950c-aafb7e793182"
+      ].includes(r.doi));
   }
 
   /**
