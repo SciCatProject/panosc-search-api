@@ -12,11 +12,10 @@ exports.Dataset = class {
    */
 
   async find(filter) {
-    const jsonFilter = JSON.stringify(filter);
-    console.log(">>> Dataset.find filter", jsonFilter);
-    const url = jsonFilter
-      ? baseUrl + "/datasets?filter=" + jsonFilter
-      : baseUrl + "/datasets";
+
+    const jsonFilter = JSON.stringify(filter ? filter : {});
+    //  console.log(">>> Dataset.find filter", jsonFilter);
+    const url = baseUrl + "/datasets?filter=" + jsonFilter;
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -70,10 +69,10 @@ exports.Dataset = class {
     //console.log(">>> Dataset.findByIdFiles pid", encodedId);
     //console.log(">>> Dataset.findByIdFiles filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Datasets/" + encodedId + "?filter=" + jsonFilter
-      : baseUrl + "/Datasets/" + encodedId;
+      ? baseUrl + "/datasets/" + encodedId + "/origdatablocks?filter=" + jsonFilter
+      : baseUrl + "/datasets/" + encodedId + "/origdatablocks";
     const res = await superagent.get(url);
-    return JSON.parse(res.text)["origdatablocks"];
+    return JSON.parse(res.text);
   }
 };
 
