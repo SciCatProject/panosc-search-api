@@ -13,10 +13,10 @@ exports.Dataset = class {
 
   async find(filter) {
     const jsonFilter = JSON.stringify(filter);
-    //console.log(">>> Dataset.find filter", jsonFilter);
+    console.log(">>> Dataset.find filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Datasets?filter=" + jsonFilter
-      : baseUrl + "/Datasets";
+      ? baseUrl + "/datasets?filter=" + jsonFilter
+      : baseUrl + "/datasets";
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -34,8 +34,8 @@ exports.Dataset = class {
     //console.log(">>> Dataset.findById pid", encodedId);
     //console.log(">>> Dataset.findById filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Datasets/" + encodedId + "?filter=" + jsonFilter
-      : baseUrl + "/Datasets/" + encodedId;
+      ? baseUrl + "/datasets/" + encodedId + "?filter=" + jsonFilter
+      : baseUrl + "/datasets/" + encodedId;
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -50,8 +50,8 @@ exports.Dataset = class {
     const jsonFilter = JSON.stringify(filter);
     //console.log(">>> Dataset.count filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Datasets?filter=" + jsonFilter
-      : baseUrl + "/Datasets";
+      ? baseUrl + "/datasets?filter=" + jsonFilter
+      : baseUrl + "/datasets";
     const res = await superagent.get(url);
     const datasets = JSON.parse(res.text);
     return { count: datasets.length };
@@ -85,14 +85,14 @@ exports.PublishedData = class {
    */
 
   async find(filter) {
-    console.log("PublishedData.find - BEGIN");
+    console.log("publisheddata.find - BEGIN");
     const jsonFilter = JSON.stringify(filter);
-    console.log("PublishedData.find filter", jsonFilter);
+    console.log("publisheddata.find filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/PublishedData?filter=" + jsonFilter
-      : baseUrl + "/PublishedData";
+      ? baseUrl + "/publisheddata?filter=" + jsonFilter
+      : baseUrl + "/publisheddata";
     const res = await superagent.get(url);
-    console.log("PublishedData.find - END");
+    console.log("publisheddata.find - END");
     return JSON.parse(res.text);
   }
 
@@ -106,11 +106,11 @@ exports.PublishedData = class {
   async findById(id, filter) {
     const encodedId = encodeURIComponent(id);
     const jsonFilter = JSON.stringify(filter);
-    //console.log(">>> PublishedData.findById pid", encodedId);
-    //console.log(">>> PublishedData.findById filter", jsonFilter);
+    //console.log(">>> publisheddata.findById pid", encodedId);
+    //console.log(">>> publisheddata.findById filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/PublishedData/" + encodedId + "?filter=" + jsonFilter
-      : baseUrl + "/PublishedData/" + encodedId;
+      ? baseUrl + "/publisheddata/" + encodedId + "?filter=" + jsonFilter
+      : baseUrl + "/publisheddata/" + encodedId;
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -123,10 +123,10 @@ exports.PublishedData = class {
 
   async count(where) {
     const jsonWhere = JSON.stringify(where);
-    //console.log(">>> PublishedData.count where", jsonWhere);
+    //console.log(">>> publisheddata.count where", jsonWhere);
     const url = jsonWhere
-      ? baseUrl + "/PublishedData/count?where=" + jsonWhere
-      : baseUrl + "/PublishedData/count";
+      ? baseUrl + "/publisheddata/count?where=" + jsonWhere
+      : baseUrl + "/publisheddata/count";
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -143,8 +143,8 @@ exports.Instrument = class {
     const jsonFilter = JSON.stringify(filter);
     //console.log(">>> Instrument.find filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Instruments?filter=" + jsonFilter
-      : baseUrl + "/Instruments";
+      ? baseUrl + "/instruments?filter=" + jsonFilter
+      : baseUrl + "/instruments";
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -162,8 +162,8 @@ exports.Instrument = class {
     //console.log(">>> Instrument.findById id", encodedId);
     //console.log(">>> Instrument.findById filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Instruments/" + encodedId + "?filter=" + jsonFilter
-      : baseUrl + "/Instruments/" + encodedId;
+      ? baseUrl + "/instruments/" + encodedId + "?filter=" + jsonFilter
+      : baseUrl + "/instruments/" + encodedId;
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -178,8 +178,8 @@ exports.Instrument = class {
     const jsonWhere = JSON.stringify(where);
     //console.log(">>> Instrument.count where", jsonWhere);
     const url = jsonWhere
-      ? baseUrl + "/Instruments/count?where=" + jsonWhere
-      : baseUrl + "/Instruments/count";
+      ? baseUrl + "/instruments/count?where=" + jsonWhere
+      : baseUrl + "/instruments/count";
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
@@ -196,8 +196,8 @@ exports.Sample = class {
     const jsonFilter = JSON.stringify(filter);
     //console.log(">>> Sample.find filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/Samples?filter=" + jsonFilter
-      : baseUrl + "/Samples";
+      ? baseUrl + "/samples?filter=" + jsonFilter
+      : baseUrl + "/samples";
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
