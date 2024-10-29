@@ -23,19 +23,21 @@ module.exports = function (Dataset) {
     var limit = -1;
     // retrieve scoring parameters if enabled
     if (pssScoreEnabled) {
-      // remove limit only if scoreing is enabled
-      if (filter && Object.keys(filter).includes("limit")) {
-        limit = filter.limit;
-        delete filter.limit;
-      }
       // check if query is passed in the filter
       if (!query && filter && Object.keys(filter).includes("query")) {
         query = filter.query;
         delete filter.query;
       }
+      // remove limit only if scoreing is enabled
+      if (query && filter && Object.keys(filter).includes("limit")) {
+        limit = filter.limit;
+        delete filter.limit;
+      }
     }
 
     const scicatFilter = await filterMapper.dataset(filter);
+    console.log("User Filter " + JSON.stringify(filter));
+    console.log("SciCat Filter " + JSON.stringify(scicatFilter));
     const datasets = await scicatDatasetService.find(scicatFilter);
     console.log(datasets.length + " datasets found");
 

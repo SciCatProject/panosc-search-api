@@ -100,11 +100,14 @@ exports.dataset = async (filter) => {
         scicatFilter.include = mapIncludeFilter(include);
       }
     }
-    if (filter.skip) {
-      scicatFilter.skip = filter.skip;
-    }
-    if (filter.limit) {
-      scicatFilter.limit = filter.limit;
+    if (filter.skip || filter.limit) {
+      scicatFilter.limits = {};
+      if (filter.skip) {
+        scicatFilter.limits.skip = filter.skip;
+      }
+      if (filter.limit) {
+        scicatFilter.limits.limit = filter.limit;
+      }
     }
     return scicatFilter;
   }
