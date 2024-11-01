@@ -29,15 +29,15 @@ module.exports = function (Document) {
     var limit = -1;
     // retrieve scoring parameters if enabled
     if (pssScoreEnabled) {
-      // remove limit only if scoreing is enabled
-      if (filter && Object.keys(filter).includes("limit")) {
-        limit = filter.limit;
-        delete filter.limit;
-      }
       // check if query is passed in the filter
       if (!query && filter && Object.keys(filter).includes("query")) {
         query = filter.query;
         delete filter.query;
+      }
+      // remove limit only if scoreing is enabled
+      if (query && filter && Object.keys(filter).includes("limit")) {
+        limit = filter.limit;
+        delete filter.limit;
       }
     }
 
@@ -46,6 +46,8 @@ module.exports = function (Document) {
 
     console.log("Retrieving published data from scicat");
     const scicatFilter = filterMapper.document(filter);
+    console.log("User Filter " + JSON.stringify(filter));
+    console.log("SciCat Filter " + JSON.stringify(scicatFilter));
     const publishedData = await scicatPublishedDataService.find(scicatFilter);
     console.log(publishedData.length + " documents found");
     // perform scoring only if is enabled

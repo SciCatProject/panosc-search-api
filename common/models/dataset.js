@@ -19,6 +19,7 @@ module.exports = function (Dataset) {
    */
 
   Dataset.find = async function (filter, query) {
+    console.log("Dataset.find -  BEGIN");
     // remove filter limit
     var limit = -1;
     // retrieve scoring parameters if enabled

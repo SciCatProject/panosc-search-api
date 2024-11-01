@@ -121,9 +121,10 @@ exports.dataset = async (filter) => {
 
 exports.document = (filter) => {
   if (!filter) {
-    return { fields: { thumbnail: false } };
+    //return { fields: { thumbnail: false } };
+    return { fields: {} };
   } else {
-    let scicatFilter = {};
+    let scicatFilter = { fields: {} };
     if (filter.where) {
       if (filter.where.and) {
         filter.where.and = filter.where.and
@@ -163,17 +164,21 @@ exports.document = (filter) => {
         scicatFilter.include = mapIncludeFilter(include);
       }
     }
-    if (filter.skip) {
-      scicatFilter.skip = filter.skip;
+    if (filter.skip || filter.limit) {
+      scicatFilter.limits = {};
+      if (filter.skip) {
+        scicatFilter.limits.skip = filter.skip;
+      }
+      if (filter.limit) {
+        scicatFilter.limits.limit = filter.limit;
+      }
     }
-    if (filter.limit) {
-      scicatFilter.limit = filter.limit;
-    }
-    if (filter.fields) {
-      scicatFilter.fields.thumbnail = false;
-    } else {
-      scicatFilter.fields = { thumbnail: false };
-    }
+
+    // if (filter.fields) {
+    //   scicatFilter.fields.thumbnail = false;
+    // } else {
+    //   scicatFilter.fields = { thumbnail: false };
+    // }
     return scicatFilter;
   }
 };
