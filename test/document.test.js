@@ -47,7 +47,7 @@ describe("Document", () => {
               expect(document).to.have.property("score");
               expect(document).not.to.have.property("thumbnail");
             });
-            expect(findStub.args[0][0]).to.be.eql({ fields:{ thumbnail: false } });
+            expect(findStub.args[0][0]).to.be.eql({ fields:{} });
             done();
           });
       });
@@ -118,7 +118,7 @@ describe("Document", () => {
                   { authors:"James Chadwick" }
                 ]
               },
-              fields: { thumbnail: false }
+              fields: {}
             });
             done();
           });
@@ -421,7 +421,7 @@ describe("Document", () => {
           expect(res.body).to.have.property("type");
           expect(res.body).to.have.property("title");
           expect(findByIdStub.args[0][1]).to.be.eql(
-            { fields: { thumbnail: false } }
+            { fields: {} }
           );
           done();
         });
