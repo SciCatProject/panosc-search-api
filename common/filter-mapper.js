@@ -51,7 +51,7 @@ exports.expandTechniquesInFilter = async (filter) => {
 
 exports.dataset = async (filter) => {
   if (!filter) {
-    return null;
+    return {};
   } else {
     let scicatFilter = {
       "where": []
@@ -106,6 +106,8 @@ exports.dataset = async (filter) => {
     if (filter.limit) {
       scicatFilter.limit = filter.limit;
     }
+    if (scicatFilter.where.length === 0)
+      delete scicatFilter.where;
     return scicatFilter;
   }
 };
