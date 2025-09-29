@@ -19,7 +19,7 @@
 
 4. Set the ENV variables
    ```bash
-   export BASE_URL=<CATAMEL_API_BASE_URL>               # e.g. https://scicat.ess.eu/api/v3
+   export BASE_URL=<SCICAT_BACKEND_API_BASE_URL>        # e.g. https://scicat.ess.eu
    export FACILITY=<YOUR_FACILITY>                      # e.g. ESS
    export PSS_BASE_URL=<PANOSC_SEARCH_SCORING_API_URL>  # e.g. http://scicat08.esss.lu.se:32222
    export PSS_ENABLE=<1 or 0>                           # e.g. 1 if you have a PSS running in your facility or 0 if you do not
@@ -81,13 +81,13 @@ please refer to the related container repository accessible on github at the fol
 
   - https://github.com/SciCatProject/panosc-search-api/pkgs/container/panosc-search-api
 
-To install the latest stable releas of the PaNOSC Search API (SciCat implementation), 
+To install the latest stable releas of the PaNOSC Search API (SciCat implementation),
 you may run the following command in a terminal:
 ```bash
    docker pull ghcr.io/scicatproject/panosc-search-api:stable
 ```
 
-If you want to deploy a specific version, replace _stable_ with the version tag. 
+If you want to deploy a specific version, replace _stable_ with the version tag.
 If you weant to install verion 1.1.2, the command should be:
 ```bash
    docker pull ghcr.io/scicatproject/panosc-search-api:v1.1.2

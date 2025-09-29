@@ -99,8 +99,7 @@ describe("Dataset", () => {
           ? (o[nameMap[k] || k] = {}, renameKeys(ds[k], o[nameMap[k] || k]))
           : o[nameMap[k] || k] = ds[k],
         o
-      ),
-      init);
+      ), init);
 
     const testsPhotonEnergy = [
       {
@@ -381,4 +380,48 @@ describe("Dataset", () => {
         });
     });
   });
+
+  describe("GET /datasets/count", () => {
+    context("no filter", () => {
+      it("should return the dataset count", (done) => {
+        request(app)
+          .get(requestUrl + "/count")
+          .set("Accept", "application/json")
+          .expect(200)
+          .expect("Content-Type", /json/)
+          .end((err, res) => {
+            if (err) throw err;
+
+            expect(res.body).to.have.property("count");
+            done();
+          });
+      });
+    });
+
+    context("with filter", () => {
+      it("should return the dataset count", (done) => {
+
+        const filter = JSON.stringify({
+          where: [
+            {
+              "dataSetName": "ProbablyDoesntExist"
+            },
+          ],
+        });
+
+        request(app)
+          .get(requestUrl + "/count" + "?filter=" + filter)
+          .set("Accept", "application/json")
+          .expect(200)
+          .expect("Content-Type", /json/)
+          .end((err, res) => {
+            if (err) throw err;
+
+            expect(res.body).to.have.property("count");
+            done();
+          });
+      });
+    });
+  });
+
 });
