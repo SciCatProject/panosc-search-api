@@ -5,7 +5,7 @@ RUN apk update && apk upgrade
 # please change the following variable according to your deployment
 # the current values are set for ESS environment
 ARG NODE_ENV="production"
-ARG BASE_URL="https://scicat.ess.eu/api/v3"
+ARG BASE_URL="https://scicat.ess.eu"
 ARG FACILITY="ESS"
 ARG PSS_BASE_URL="http://scicat08.esss.lu.se:32222"
 ARG PSS_ENABLE=1
