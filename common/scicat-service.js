@@ -33,8 +33,8 @@ exports.Dataset = class {
     //console.log(">>> Dataset.findById pid", encodedId);
     //console.log(">>> Dataset.findById filter", jsonFilter);
     const url = jsonFilter
-      ? baseUrl + "/api/v4/datasets/public" + encodedId + "?filter=" + jsonFilter
-      : baseUrl + "/api/v4/datasets/public" + encodedId;
+      ? baseUrl + "/api/v4/datasets/public/" + encodedId + "?filter=" + jsonFilter
+      : baseUrl + "/api/v4/datasets/public/" + encodedId;
     const res = await superagent.get(url);
     return JSON.parse(res.text);
   }
